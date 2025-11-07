@@ -4,6 +4,12 @@
 
 A modern learning platform that replaces traditional semester-based education with intensive one-week learning sprints focused on cognitive development and independent thinking.
 
+## 🌐 Live Application
+
+**[🚀 View Live App](https://mindforge.vercel.app)** | **[📚 API Documentation](./docs/api.md)**
+
+> **Note**: Update the deployment URL above with your actual production URL.
+
 ## 🚀 Quick Start
 
 See [QUICK_START.md](./QUICK_START.md) for immediate setup instructions.

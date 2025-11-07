@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "MindForge Learning Program - MVP Platform",
+  "homepage": "https://mindforge.vercel.app",
   "workspaces": [
     "client",
     "server",
