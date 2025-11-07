@@ -57,70 +57,6 @@ export const getAllBootcamps = async (
       };
     }
 
-    const [bootcamps, total] = await Promise.all([
-      prisma.bootcamp.findMany({
-        where,
-        include: {
-          Facilitator: {
-            include: {
-              User: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                },
-              },
-            },
-          },
-          _count: {
-            select: {
-              enrollments: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        skip,
-        take: limit,
-      }),
-      prisma.bootcamp.count({ where }),
-    ]);
-
-export const getAllBootcamps = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { status, facilitatorId, subject, format } = req.query;
-    const { page, limit, skip } = parsePagination(req);
-
-    const where: any = {};
-
-    if (status) {
-      where.status = status;
-    } else {
-      // Default to published only for public listing
-      where.status = 'PUBLISHED';
-    }
-
-    if (facilitatorId) {
-      where.facilitatorId = facilitatorId;
-    }
-
-    if (subject) {
-      where.subjects = {
-        has: subject,
-      };
-    }
-
-    if (format) {
-      where.format = {
-        has: format,
-      };
-    }
-
     let bootcamps, total;
     try {
       [bootcamps, total] = await Promise.all([
@@ -155,7 +91,7 @@ export const getAllBootcamps = async (
     } catch (dbError: any) {
       if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
         throw new AppError(
-          'Database not connected. Please set up PostgreSQL. See QUICK_START_NO_DOCKER.md for instructions.',
+          'Database not connected. Please set up PostgreSQL. See DATABASE_SETUP.md for instructions.',
           503
         );
       }
@@ -168,7 +104,6 @@ export const getAllBootcamps = async (
   } catch (error) {
     next(error);
   }
-};
 };
 
 export const getBootcamp = async (
