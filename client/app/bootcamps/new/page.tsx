@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-import { Input, Textarea, Select, Checkbox } from '../../components/Form';
+import { Input, Textarea, Checkbox } from '../../components/Form';
 import { useToast } from '../../components/Toast';
 import { useForm, validators } from '../../lib/useForm';
 import { api } from '../../lib/api';

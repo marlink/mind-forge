@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../Card';
 import { Button } from '../Button';
-import { LoadingSpinner, LoadingSkeleton } from '../Loading';
+import { LoadingSkeleton } from '../Loading';
 import { EmptyState, ErrorMessage } from '../Error';
 import { ProgressChart, SkillDistribution } from '../ProgressChart';
 

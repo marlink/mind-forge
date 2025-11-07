@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../Card';
 import { Button } from '../Button';
-import { LoadingSpinner, LoadingSkeleton } from '../Loading';
+import { LoadingSkeleton } from '../Loading';
 import { EmptyState, ErrorMessage } from '../Error';
 
 interface Child {
@@ -53,7 +53,6 @@ export function ParentDashboard({ userId }: ParentDashboardProps) {
       );
 
       if (response.ok) {
-        const data = await response.json();
         // This would need to include children data from the API
         // For MVP, we'll show a placeholder structure
         setChildren([]);

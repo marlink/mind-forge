@@ -320,6 +320,90 @@ const columns = [
 />
 ```
 
+### Navigation
+
+A reusable navigation header component with responsive mobile menu.
+
+**Location**: `client/app/components/Navigation.tsx`
+
+**Props**:
+- `user`: `User | null` - Current user object (optional)
+- `showBackButton`: `boolean` - Show back button (default: `false`)
+- `backHref`: `string` - URL for back button
+- `backLabel`: `string` - Label for back button (default: `'Back'`)
+
+**Features**:
+- Responsive design (mobile menu)
+- Active route highlighting
+- User authentication state handling
+- Logout functionality
+- Role badge display
+- Smooth transitions
+
+**Usage**:
+```tsx
+import { Navigation } from '../components/Navigation';
+
+<Navigation 
+  user={user}
+  showBackButton={true}
+  backHref="/dashboard"
+  backLabel="Back to Dashboard"
+/>
+```
+
+### Calendar
+
+A calendar component for displaying sessions in a month view.
+
+**Location**: `client/app/components/Calendar.tsx`
+
+**Props**:
+- `sessions`: `Session[]` - Array of session objects
+- `bootcampId`: `string` - ID of the bootcamp
+- `onDateClick`: `(date: Date) => void` - Optional callback when a date is clicked
+- `className`: `string` - Additional CSS classes
+
+**Session Interface**:
+```typescript
+interface Session {
+  id: string;
+  day: number;
+  theme: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  activities?: Array<{
+    id: string;
+    time: string;
+    title: string;
+    type: string;
+  }>;
+}
+```
+
+**Features**:
+- Month navigation (previous/next/today)
+- Visual indicators for dates with sessions
+- Highlights today's date
+- Shows session count per day
+- Clickable dates to navigate to session details
+- Legend for visual indicators
+
+**Usage**:
+```tsx
+import { Calendar } from '../components/Calendar';
+
+<Calendar
+  sessions={sessions}
+  bootcampId={bootcampId}
+  onDateClick={(date) => {
+    // Handle date click
+    console.log('Clicked date:', date);
+  }}
+/>
+```
+
 ### ProgressChart
 
 Progress visualization components.

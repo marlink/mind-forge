@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../Card';
 import { Button } from '../Button';
-import { LoadingSpinner, LoadingSkeleton } from '../Loading';
+import { LoadingSkeleton } from '../Loading';
 import { EmptyState, ErrorMessage } from '../Error';
 
 interface Bootcamp {
@@ -32,6 +32,7 @@ export function FacilitatorDashboard({ userId }: FacilitatorDashboardProps) {
 
   useEffect(() => {
     fetchBootcamps();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchBootcamps = async () => {

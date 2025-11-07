@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "projectId": "prj_SwjnB9DHhpuCK1wJc8AVbGB93Hf3",
+  "buildCommand": "npm run build:shared && npm run build:client",
+  "installCommand": "npm install",
+  "outputDirectory": "client/.next"
+}

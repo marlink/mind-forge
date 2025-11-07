@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '../../../../components/Card';
 import { Button } from '../../../../components/Button';
-import { PageLoading, LoadingSkeleton } from '../../../../components/Loading';
+import { PageLoading } from '../../../../components/Loading';
 import { ErrorMessage, EmptyState } from '../../../../components/Error';
+import { Modal } from '../../../../components/Modal';
+import { Input, Textarea } from '../../../../components/Form';
 import { useToast } from '../../../../components/Toast';
+import { useForm, validators } from '../../../../lib/useForm';
+import { api } from '../../../../lib/api';
 
 interface Activity {
   id: string;
@@ -59,15 +63,16 @@ interface Session {
 }
 
 export default function SessionDetailPage() {
-  const router = useRouter();
   const params = useParams();
-  const toast = useToast();
   const bootcampId = params?.id as string;
   const sessionId = params?.sessionId as string;
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     if (sessionId) {
@@ -124,6 +129,31 @@ export default function SessionDetailPage() {
       setError('An error occurred while loading session details');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditActivity = (activity: Activity) => {
+    setEditingActivity(activity);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateActivity = async (updatedData: Partial<Activity>) => {
+    if (!editingActivity) return;
+
+    try {
+      const response = await api.put(
+        `/api/sessions/${sessionId}/activities/${editingActivity.id}`,
+        updatedData
+      );
+
+      if (response.status === 'success') {
+        toast.showToast('Activity updated successfully!', 'success');
+        setIsEditModalOpen(false);
+        setEditingActivity(null);
+        fetchSession(); // Refresh session data
+      }
+    } catch (error: any) {
+      toast.showToast(error.message || 'Failed to update activity', 'error');
     }
   };
 
@@ -201,9 +231,11 @@ export default function SessionDetailPage() {
             </div>
             {isFacilitatorOrAdmin && (
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm">
-                  Edit Session
-                </Button>
+                <Link href={`/bootcamps/${bootcampId}/sessions/${sessionId}/edit`}>
+                  <Button variant="outline" size="sm">
+                    Edit Session
+                  </Button>
+                </Link>
               </div>
             )}
           </div>
@@ -356,7 +388,11 @@ export default function SessionDetailPage() {
                     </div>
                     {isFacilitatorOrAdmin && (
                       <div className="ml-4">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleEditActivity(activity)}
+                        >
                           Edit
                         </Button>
                       </div>
@@ -373,7 +409,299 @@ export default function SessionDetailPage() {
           )}
         </Card>
       </div>
+
+      {/* Activity Edit Modal */}
+      {editingActivity && (
+        <ActivityEditModal
+          activity={editingActivity}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingActivity(null);
+          }}
+          onSave={handleUpdateActivity}
+        />
+      )}
     </div>
+  );
+}
+
+// Activity Edit Modal Component
+interface ActivityEditModalProps {
+  activity: Activity;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: Partial<Activity>) => Promise<void>;
+}
+
+function ActivityEditModal({ activity, isOpen, onClose, onSave }: ActivityEditModalProps) {
+  const [materials, setMaterials] = useState<string[]>(activity.materials || []);
+  const [learningObjectives, setLearningObjectives] = useState<string[]>(activity.learningObjectives || []);
+  const [studentDeliverables, setStudentDeliverables] = useState<string[]>(activity.studentDeliverables || []);
+  const [newMaterial, setNewMaterial] = useState('');
+  const [newObjective, setNewObjective] = useState('');
+  const [newDeliverable, setNewDeliverable] = useState('');
+
+  // Update state when activity changes
+  useEffect(() => {
+    if (activity) {
+      setMaterials(activity.materials || []);
+      setLearningObjectives(activity.learningObjectives || []);
+      setStudentDeliverables(activity.studentDeliverables || []);
+    }
+  }, [activity]);
+
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+  } = useForm({
+    initialValues: {
+      time: activity.time,
+      type: activity.type,
+      title: activity.title,
+      description: activity.description,
+      facilitatorNotes: activity.facilitatorNotes || '',
+    },
+    validationRules: {
+      time: [validators.required('Time is required')],
+      type: [validators.required('Type is required')],
+      title: [validators.required('Title is required')],
+      description: [validators.required('Description is required')],
+    },
+    onSubmit: async (formValues) => {
+      await onSave({
+        ...formValues,
+        materials,
+        learningObjectives,
+        studentDeliverables,
+      });
+    },
+  });
+
+  const addItem = (
+    item: string,
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    clearInput: () => void
+  ) => {
+    if (item.trim()) {
+      setter((prev) => [...prev, item.trim()]);
+      clearInput();
+    }
+  };
+
+  const removeItem = (
+    index: number,
+    setter: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setter((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Activity"
+      size="xl"
+      footer={
+        <>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} isLoading={isSubmitting}>
+            Save Changes
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Time"
+            name="time"
+            value={values.time}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.time ? errors.time : undefined}
+            placeholder="e.g., 09:00"
+            required
+          />
+          <Input
+            label="Type"
+            name="type"
+            value={values.type}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.type ? errors.type : undefined}
+            placeholder="e.g., Lecture, Workshop"
+            required
+          />
+        </div>
+
+        <Input
+          label="Title"
+          name="title"
+          value={values.title}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.title ? errors.title : undefined}
+          required
+        />
+
+        <Textarea
+          label="Description"
+          name="description"
+          value={values.description}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.description ? errors.description : undefined}
+          rows={4}
+          required
+        />
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Materials
+          </label>
+          <div className="flex gap-2 mb-2">
+            <Input
+              value={newMaterial}
+              onChange={(e) => setNewMaterial(e.target.value)}
+              placeholder="Add material"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addItem(newMaterial, setMaterials, () => setNewMaterial(''));
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addItem(newMaterial, setMaterials, () => setNewMaterial(''))}
+            >
+              Add
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {materials.map((material, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+              >
+                {material}
+                <button
+                  type="button"
+                  onClick={() => removeItem(idx, setMaterials)}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Learning Objectives
+          </label>
+          <div className="flex gap-2 mb-2">
+            <Input
+              value={newObjective}
+              onChange={(e) => setNewObjective(e.target.value)}
+              placeholder="Add objective"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addItem(newObjective, setLearningObjectives, () => setNewObjective(''));
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addItem(newObjective, setLearningObjectives, () => setNewObjective(''))}
+            >
+              Add
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {learningObjectives.map((objective, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800"
+              >
+                {objective}
+                <button
+                  type="button"
+                  onClick={() => removeItem(idx, setLearningObjectives)}
+                  className="ml-2 text-green-600 hover:text-green-800"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Student Deliverables
+          </label>
+          <div className="flex gap-2 mb-2">
+            <Input
+              value={newDeliverable}
+              onChange={(e) => setNewDeliverable(e.target.value)}
+              placeholder="Add deliverable"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addItem(newDeliverable, setStudentDeliverables, () => setNewDeliverable(''));
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addItem(newDeliverable, setStudentDeliverables, () => setNewDeliverable(''))}
+            >
+              Add
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {studentDeliverables.map((deliverable, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
+              >
+                {deliverable}
+                <button
+                  type="button"
+                  onClick={() => removeItem(idx, setStudentDeliverables)}
+                  className="ml-2 text-purple-600 hover:text-purple-800"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <Textarea
+          label="Facilitator Notes (optional)"
+          name="facilitatorNotes"
+          value={values.facilitatorNotes}
+          onChange={handleChange}
+          rows={3}
+        />
+      </div>
+    </Modal>
   );
 }
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
-import { LoadingSpinner, LoadingSkeleton } from '../components/Loading';
+import { LoadingSkeleton } from '../components/Loading';
 import { EmptyState, ErrorMessage } from '../components/Error';
 import { Modal } from '../components/Modal';
 import { Input, Textarea, Select } from '../components/Form';

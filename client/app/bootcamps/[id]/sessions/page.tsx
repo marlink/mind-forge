@@ -5,11 +5,11 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '../../../components/Card';
 import { Button } from '../../../components/Button';
-import { PageLoading, LoadingSkeleton } from '../../../components/Loading';
+import { PageLoading } from '../../../components/Loading';
 import { ErrorMessage, EmptyState } from '../../../components/Error';
 import { Table } from '../../../components/Table';
 import { Select } from '../../../components/Form';
-import { useToast } from '../../../components/Toast';
+import { Calendar } from '../../../components/Calendar';
 
 interface Session {
   id: string;
@@ -37,7 +37,6 @@ interface Bootcamp {
 export default function SessionsListPage() {
   const router = useRouter();
   const params = useParams();
-  const toast = useToast();
   const bootcampId = params?.id as string;
   const [sessions, setSessions] = useState<Session[]>([]);
   const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
@@ -46,6 +45,7 @@ export default function SessionsListPage() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [sortBy, setSortBy] = useState<'day' | 'date'>('day');
+  const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
 
   useEffect(() => {
     if (bootcampId) {
@@ -276,86 +276,151 @@ export default function SessionsListPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">Filter:</label>
+                <label className="text-sm font-medium text-gray-700">View:</label>
                 <div className="flex space-x-2">
                   <Button
-                    variant={filter === 'all' ? 'primary' : 'outline'}
+                    variant={viewMode === 'table' ? 'primary' : 'outline'}
                     size="sm"
-                    onClick={() => setFilter('all')}
+                    onClick={() => setViewMode('table')}
                   >
-                    All
+                    Table
                   </Button>
                   <Button
-                    variant={filter === 'upcoming' ? 'primary' : 'outline'}
+                    variant={viewMode === 'calendar' ? 'primary' : 'outline'}
                     size="sm"
-                    onClick={() => setFilter('upcoming')}
+                    onClick={() => setViewMode('calendar')}
                   >
-                    Upcoming
-                  </Button>
-                  <Button
-                    variant={filter === 'past' ? 'primary' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilter('past')}
-                  >
-                    Past
+                    Calendar
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium text-gray-700">Sort by:</label>
-                <Select
-                  value={sortBy}
-                  onChange={(e) => {
-                    setSortBy(e.target.value as 'day' | 'date');
-                    fetchSessions();
-                  }}
-                  options={[
-                    { value: 'day', label: 'Day Number' },
-                    { value: 'date', label: 'Date' },
-                  ]}
-                  className="w-40"
-                />
-              </div>
+              {viewMode === 'table' && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium text-gray-700">Filter:</label>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant={filter === 'all' ? 'primary' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('all')}
+                      >
+                        All
+                      </Button>
+                      <Button
+                        variant={filter === 'upcoming' ? 'primary' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('upcoming')}
+                      >
+                        Upcoming
+                      </Button>
+                      <Button
+                        variant={filter === 'past' ? 'primary' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilter('past')}
+                      >
+                        Past
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                    <Select
+                      value={sortBy}
+                      onChange={(e) => {
+                        setSortBy(e.target.value as 'day' | 'date');
+                        fetchSessions();
+                      }}
+                      options={[
+                        { value: 'day', label: 'Day Number' },
+                        { value: 'date', label: 'Date' },
+                      ]}
+                      className="w-40"
+                    />
+                  </div>
+                </>
+              )}
             </div>
             {isFacilitatorOrAdmin && (
-              <Button>Create Session</Button>
+              <Link href={`/bootcamps/${bootcampId}/sessions/new`}>
+                <Button>Create Session</Button>
+              </Link>
             )}
           </div>
         </Card>
 
-        {/* Sessions Table */}
-        <Card title={`${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`}>
-          {error ? (
-            <ErrorMessage message={error} onRetry={fetchSessions} />
-          ) : sessions.length > 0 ? (
-            <Table
-              data={sessions}
-              columns={columns}
-              keyExtractor={(session) => session.id}
-              onRowClick={(session) => {
-                router.push(`/bootcamps/${bootcampId}/sessions/${session.id}`);
-              }}
-              hover={true}
-              striped={true}
-            />
-          ) : (
-            <EmptyState
-              title="No sessions found"
-              message={
-                filter === 'upcoming'
-                  ? 'No upcoming sessions scheduled.'
-                  : filter === 'past'
-                  ? 'No past sessions found.'
-                  : 'No sessions have been created for this bootcamp yet.'
-              }
-              action={
-                isFacilitatorOrAdmin ? (
-                  <Button>Create First Session</Button>
-                ) : undefined
-              }
-            />
-          )}
-        </Card>
+        {/* Sessions View */}
+        {viewMode === 'calendar' ? (
+          <div className="mb-6">
+            {error ? (
+              <Card>
+                <ErrorMessage message={error} onRetry={fetchSessions} />
+              </Card>
+            ) : sessions.length > 0 ? (
+              <Calendar
+                sessions={sessions}
+                bootcampId={bootcampId}
+                onDateClick={(date) => {
+                  // Find sessions for clicked date
+                  const dateSessions = sessions.filter(
+                    (s) => new Date(s.date).toDateString() === date.toDateString()
+                  );
+                  if (dateSessions.length === 1) {
+                    router.push(`/bootcamps/${bootcampId}/sessions/${dateSessions[0].id}`);
+                  }
+                }}
+              />
+            ) : (
+              <Card>
+                <EmptyState
+                  title="No sessions found"
+                  message="No sessions have been created for this bootcamp yet."
+                  action={
+                    isFacilitatorOrAdmin ? (
+                      <Link href={`/bootcamps/${bootcampId}/sessions/new`}>
+                        <Button>Create First Session</Button>
+                      </Link>
+                    ) : undefined
+                  }
+                />
+              </Card>
+            )}
+          </div>
+        ) : (
+          <Card title={`${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`}>
+            {error ? (
+              <ErrorMessage message={error} onRetry={fetchSessions} />
+            ) : sessions.length > 0 ? (
+              <Table
+                data={sessions}
+                columns={columns}
+                keyExtractor={(session) => session.id}
+                onRowClick={(session) => {
+                  router.push(`/bootcamps/${bootcampId}/sessions/${session.id}`);
+                }}
+                hover={true}
+                striped={true}
+              />
+            ) : (
+              <EmptyState
+                title="No sessions found"
+                message={
+                  filter === 'upcoming'
+                    ? 'No upcoming sessions scheduled.'
+                    : filter === 'past'
+                    ? 'No past sessions found.'
+                    : 'No sessions have been created for this bootcamp yet.'
+                }
+                action={
+                  isFacilitatorOrAdmin ? (
+                    <Link href={`/bootcamps/${bootcampId}/sessions/new`}>
+                      <Button>Create First Session</Button>
+                    </Link>
+                  ) : undefined
+                }
+              />
+            )}
+          </Card>
+        )}
 
         {/* Summary Stats */}
         {sessions.length > 0 && (

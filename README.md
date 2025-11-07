@@ -43,6 +43,7 @@ See [QUICK_START.md](./QUICK_START.md) for immediate setup instructions.
 
 **See [FRONTEND_STATUS.md](./FRONTEND_STATUS.md) and [NEXT_SESSION.md](./NEXT_SESSION.md) for detailed status.**
 **See [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md) for production deployment guide.**
+**See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for Vercel deployment instructions.**
 
 ## Project Structure
 
@@ -124,6 +125,31 @@ mindforge-mvp/
    This will start:
    - Backend API at `http://localhost:3001`
    - Frontend app at `http://localhost:3000`
+
+## Deployment
+
+### Frontend (Vercel)
+
+Deploy the Next.js frontend to Vercel:
+
+**Quick Deploy:**
+```bash
+./deploy-vercel.sh
+```
+
+**Manual Deploy:**
+1. Install Vercel CLI: `npm i -g vercel`
+2. Navigate to client: `cd client`
+3. Deploy: `vercel`
+4. Set `NEXT_PUBLIC_API_URL` in Vercel dashboard
+
+See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for detailed instructions.
+
+### Backend
+
+Deploy the Express backend to Railway, Render, Heroku, or similar platform.
+
+See [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md) for backend deployment guide.
 
 ## Development
 
