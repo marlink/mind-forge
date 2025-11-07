@@ -90,8 +90,8 @@ export default function BootcampDetailPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const response = await api.get('/users/me');
-      if (response.status === 'success') {
+      const response = await api.get<{ user: { id: string; name: string; email: string } }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
         setUser({
           id: response.data.user.id,
           name: response.data.user.name,
