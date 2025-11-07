@@ -1,0 +1,374 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  PARENT
+  FACILITATOR
+  ADMIN
+}
+
+enum BootcampFormat {
+  IN_PERSON
+  ONLINE
+  HYBRID
+}
+
+enum BootcampStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum CommunicationType {
+  EMAIL
+  NOTIFICATION
+  MESSAGE
+  ANNOUNCEMENT
+}
+
+enum CommunicationStatus {
+  DRAFT
+  SENT
+  SCHEDULED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String     @id @default(uuid())
+  email         String     @unique
+  name          String
+  passwordHash  String
+  role          Role
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  Student       Student?
+  Parent        Parent?
+  Facilitator   Facilitator?
+  Admin         Admin?
+  Communications Communication[] @relation("Sender")
+  ReadReceipts  ReadReceipt[]
+  Payments      Payment[]
+  Subscriptions Subscription[]
+  RecipientCommunications CommunicationRecipient[] @relation("Recipient")
+}
+
+model Student {
+  id                   String     @id @default(uuid())
+  userId               String     @unique
+  age                  Int
+  grade                String
+  interests            String[]
+  learningStyle        String
+  parentId             String?
+  progress             Json
+  enrollments          Enrollment[]
+  knowledgeStreams     StudentKnowledgeStream[]
+  progressRecords      ProgressRecord[]
+  attendanceRecords    AttendanceRecord[]
+  User                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Parent               Parent?    @relation(fields: [parentId], references: [id])
+}
+
+model Parent {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  children   Student[]
+  subscriptionStatus String @default("trial")
+  notificationPreferences Json
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Facilitator {
+  id              String     @id @default(uuid())
+  userId          String     @unique
+  specialties     String[]
+  bio             String
+  rating          Float      @default(0.0)
+  availability    Json
+  bootcampsLed    Bootcamp[]
+  User            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  progressRecords ProgressRecord[]
+}
+
+model Admin {
+  id         String @id @default(uuid())
+  userId     String @unique
+  permissions String[]
+  department String
+  User       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Bootcamp {
+  id                String         @id @default(uuid())
+  title             String
+  subtitle          String
+  description       String
+  duration          String
+  format            BootcampFormat[]
+  ageRange          String
+  subjects          String[]
+  facilitatorId     String
+  schedule          String
+  capacity          Int
+  price             Float
+  learningOutcomes  String[]
+  weeklySchedule    Json
+  prerequisites     String[]
+  status            BootcampStatus @default(DRAFT)
+  enrollmentCount   Int            @default(0)
+  enrollments       Enrollment[]
+  sessions          Session[]
+  discussionTopics  DiscussionTopic[]
+  Payments          Payment[]
+  ProgressRecords   ProgressRecord[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  Facilitator       Facilitator    @relation(fields: [facilitatorId], references: [id])
+}
+
+model Enrollment {
+  id         String     @id @default(uuid())
+  studentId  String
+  bootcampId String
+  status     EnrollmentStatus @default(ACTIVE)
+  enrolledAt DateTime   @default(now())
+  completedAt DateTime?
+  Student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Bootcamp   Bootcamp   @relation(fields: [bootcampId], references: [id], onDelete: Cascade)
+  
+  @@unique([studentId, bootcampId])
+}
+
+model KnowledgeStream {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  color       String
+  icon        String
+  levels      KnowledgeLevel[]
+  studentStreams StudentKnowledgeStream[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model KnowledgeLevel {
+  id              String   @id @default(uuid())
+  level           Int
+  title           String
+  skills          String[]
+  prerequisites   Int[]
+  nextLevel       Int?
+  estimatedCompletionTime String
+  knowledgeStreamId String
+  bootcampIds     String[]
+  KnowledgeStream KnowledgeStream @relation(fields: [knowledgeStreamId], references: [id], onDelete: Cascade)
+}
+
+model StudentKnowledgeStream {
+  id              String @id @default(uuid())
+  studentId       String
+  knowledgeStreamId String
+  Student         Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  KnowledgeStream KnowledgeStream @relation(fields: [knowledgeStreamId], references: [id], onDelete: Cascade)
+  
+  @@unique([studentId, knowledgeStreamId])
+}
+
+model Session {
+  id           String           @id @default(uuid())
+  bootcampId   String
+  day          Int
+  theme        String
+  date         DateTime
+  startTime    String
+  endTime      String
+  activities   SessionActivity[]
+  attendance   AttendanceRecord[]
+  ProgressRecords ProgressRecord[]
+  Bootcamp     Bootcamp         @relation(fields: [bootcampId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model SessionActivity {
+  id                  String   @id @default(uuid())
+  sessionId           String
+  time                String
+  type                String
+  title               String
+  description         String
+  materials           String[]
+  learningObjectives  String[]
+  facilitatorNotes    String?
+  studentDeliverables String[]
+  Session             Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model AttendanceRecord {
+  id          String   @id @default(uuid())
+  sessionId   String
+  studentId   String
+  status      AttendanceStatus
+  joinTime    DateTime?
+  leaveTime   DateTime?
+  engagementScore Int?
+  Session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  Student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  @@unique([sessionId, studentId])
+}
+
+model ProgressRecord {
+  id             String     @id @default(uuid())
+  studentId      String
+  bootcampId     String?
+  sessionId      String?
+  skill          String
+  level          String
+  assessmentDate DateTime
+  facilitatorId  String
+  evidence       String
+  nextSteps      String
+  Student        Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Facilitator    Facilitator @relation(fields: [facilitatorId], references: [id], onDelete: Cascade)
+  Bootcamp       Bootcamp?  @relation(fields: [bootcampId], references: [id], onDelete: SetNull)
+  Session        Session?   @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  createdAt      DateTime   @default(now())
+}
+
+model AssessmentRubric {
+  id                  String       @id @default(uuid())
+  skill               String       @unique
+  levels              RubricLevel[]
+  assessmentActivities String[]
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
+
+model RubricLevel {
+  id           String @id @default(uuid())
+  level        String
+  description  String
+  criteria     String[]
+  rubricId     String
+  AssessmentRubric AssessmentRubric @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+}
+
+model Communication {
+  id           String     @id @default(uuid())
+  type         CommunicationType
+  senderId     String
+  subject      String
+  content      String
+  status       CommunicationStatus
+  scheduledFor DateTime?
+  sentAt       DateTime?
+  recipients   CommunicationRecipient[]
+  readReceipts ReadReceipt[]
+  Sender       User       @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+}
+
+model CommunicationRecipient {
+  id             String @id @default(uuid())
+  communicationId String
+  recipientId    String
+  Communication  Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+  User           User         @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  
+  @@unique([communicationId, recipientId])
+}
+
+model ReadReceipt {
+  id             String   @id @default(uuid())
+  communicationId String
+  userId         String
+  readAt         DateTime
+  Communication  Communication @relation(fields: [communicationId], references: [id], onDelete: Cascade)
+  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([communicationId, userId])
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  userId         String
+  amount         Float
+  currency       String   @default("USD")
+  paymentMethod  String
+  status         PaymentStatus
+  bootcampId     String?
+  subscriptionId String?
+  transactionId  String
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Bootcamp       Bootcamp? @relation(fields: [bootcampId], references: [id], onDelete: SetNull)
+  Subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Subscription {
+  id         String   @id @default(uuid())
+  userId     String
+  plan       String
+  startDate  DateTime
+  endDate    DateTime
+  status     String
+  autoRenew  Boolean  @default(true)
+  payments   Payment[]
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model TeachingExample {
+  id                 String   @id @default(uuid())
+  concept            String
+  abstractDescription String
+  concreteAnalogy    String
+  visualAid          String?
+  discussionQuestions String[]
+  subjectArea        String
+  difficultyLevel    String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model DiscussionTopic {
+  id              String   @id @default(uuid())
+  bootcampId      String
+  day             Int
+  title           String
+  prompt          String
+  guidance        String
+  expectedOutcomes String[]
+  tags            String[]
+  Bootcamp        Bootcamp @relation(fields: [bootcampId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+}
+

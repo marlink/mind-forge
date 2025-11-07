@@ -1,0 +1,36 @@
+{
+    "sessions": [
+      {
+        "bootcamp_id": "bc001",
+        "day": 1,
+        "theme": "The Detective's Mindset",
+        "activities": [
+          {
+            "time": "9:00-10:30",
+            "type": "Interactive Lecture",
+            "title": "What is Logical Reasoning?",
+            "description": "Introduction to the tools detectives and scientists use to think clearly",
+            "materials": ["slides_intro.pdf", "reasoning_examples.pdf"],
+            "learning_objectives": ["Define logical reasoning", "Identify basic argument structures"]
+          },
+          {
+            "time": "10:30-12:00",
+            "type": "Group Exercise", 
+            "title": "The Mystery of the Missing Cake",
+            "description": "Solve a classroom mystery using logical deduction",
+            "materials": ["mystery_case.pdf", "evidence_cards.pdf"],
+            "learning_objectives": ["Apply reasoning to solve problems", "Work collaboratively"]
+          },
+          {
+            "time": "1:00-2:30",
+            "type": "Peer Teaching",
+            "title": "Becoming the Reasoning Expert",
+            "description": "Students teach each other the concepts learned in the morning",
+            "materials": ["teaching_guidelines.pdf"],
+            "learning_objectives": ["Reinforce learning through teaching", "Develop communication skills"]
+          }
+        ]
+      }
+    ]
+  }
+  

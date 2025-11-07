@@ -1,0 +1,44 @@
+{
+    "rubrics": [
+      {
+        "skill": "Critical Thinking",
+        "levels": [
+          {
+            "level": "Novice",
+            "description": "Accepts information without questioning, struggles to identify biases"
+          },
+          {
+            "level": "Developing",
+            "description": "Begins to ask basic questions, can identify obvious fallacies with guidance"
+          },
+          {
+            "level": "Proficient",
+            "description": "Regularly questions assumptions, identifies most common fallacies independently"
+          },
+          {
+            "level": "Expert",
+            "description": "Systematically deconstructs arguments, anticipates counterarguments, creates robust reasoning"
+          }
+        ],
+        "assessment_activities": [
+          "Analyze a news article for logical fallacies",
+          "Construct an argument for a controversial topic",
+          "Peer review another student's reasoning"
+        ]
+      },
+      {
+        "skill": "Communication",
+        "levels": [
+          {
+            "level": "Novice",
+            "description": "Explains ideas unclearly, uses jargon without explanation"
+          },
+          {
+            "level": "Developing", 
+            "description": "Can explain basic concepts, begins to use analogies and examples"
+          }
+        ]
+      }
+    ]
+  }
+  

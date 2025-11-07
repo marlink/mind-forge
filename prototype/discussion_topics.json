@@ -1,0 +1,21 @@
+{
+    "topics": [
+      {
+        "bootcamp_id": "bc001",
+        "day": 2,
+        "title": "The Ethics of Persuasion",
+        "prompt": "If you can use logic to persuade people of anything, what responsibilities do you have? Is it ethical to persuade someone of something that benefits you but might not benefit them?",
+        "guidance": "Consider real-world examples like advertising, political campaigns, and social media",
+        "expected_outcomes": ["Understand ethical dimensions of persuasion", "Develop critical stance toward persuasive messages"]
+      },
+      {
+        "bootcamp_id": "bc002",
+        "day": 3,
+        "title": "Numbers in the Real World",
+        "prompt": "Find a statistic in the news today. How could you make it more understandable using the apple/train method or another analogy? What might be hidden or misleading about this statistic?",
+        "guidance": "Look for numbers about climate change, economics, or technology",
+        "expected_outcomes": ["Apply visualization techniques to real data", "Develop skepticism toward statistics"]
+      }
+    ]
+  }
+  

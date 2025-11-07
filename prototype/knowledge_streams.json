@@ -1,0 +1,43 @@
+{
+    "streams": [
+      {
+        "id": "stream_science",
+        "name": "Science & Technology",
+        "description": "From physics fundamentals to cutting-edge technology",
+        "levels": [
+          {
+            "level": 1,
+            "title": "Science Explorer",
+            "bootcamps": ["bc002", "bc005"],
+            "skills": ["Scientific Method", "Basic Physics", "Data Analysis"],
+            "prerequisites": [],
+            "next_level": 2
+          },
+          {
+            "level": 2,
+            "title": "Tech Innovator", 
+            "bootcamps": ["bc008", "bc012"],
+            "skills": ["Coding Fundamentals", "Engineering Principles", "Project Development"],
+            "prerequisites": [1],
+            "next_level": 3
+          }
+        ]
+      },
+      {
+        "id": "stream_humanities",
+        "name": "Humanities & Communication",
+        "description": "Mastering language, history, and persuasive communication",
+        "levels": [
+          {
+            "level": 1,
+            "title": "Storyteller",
+            "bootcamps": ["bc001", "bc004"],
+            "skills": ["Logical Reasoning", "Narrative Structure", "Clear Communication"],
+            "prerequisites": [],
+            "next_level": 2
+          }
+        ]
+      }
+    ]
+  }
+  

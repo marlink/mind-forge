@@ -1,0 +1,25 @@
+{
+    "metrics": [
+      {
+        "student_id": "stu001",
+        "bootcamp_id": "bc001",
+        "week": "2024-01-15",
+        "daily_progress": [
+          {
+            "day": 1,
+            "engagement": 95,
+            "participation": "Active in all discussions",
+            "skills_demonstrated": ["Basic logical reasoning", "Collaborative problem solving"],
+            "areas_for_improvement": ["Need to ask more probing questions"]
+          }
+        ],
+        "final_assessment": {
+          "critical_thinking_score": 88,
+          "communication_score": 82,
+          "problem_solving_score": 91,
+          "overall_feedback": "Alex showed exceptional problem-solving skills and became the group's go-to expert for technical reasoning. Would benefit from more practice explaining concepts to peers."
+        }
+      }
+    ]
+  }
+  

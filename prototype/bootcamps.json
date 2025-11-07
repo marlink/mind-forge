@@ -1,0 +1,57 @@
+{
+    "bootcamps": [
+      {
+        "id": "bc001",
+        "title": "The Logic Explorer",
+        "subtitle": "Thinking Like a Problem Solver",
+        "description": "A one-week intensive where students become detectives of reasoning. We'll dissect arguments, spot logical fallacies, and build bullet-proof thinking skills.",
+        "duration": "5 days",
+        "format": ["in-person", "online"],
+        "age_range": "12-15",
+        "subjects": ["Logic", "Critical Thinking", "Problem Solving"],
+        "facilitator": "Dr. Sarah Chen",
+        "schedule": "Mon-Fri, 9am-3pm",
+        "capacity": 8,
+        "price": 499,
+        "learning_outcomes": [
+          "Identify and avoid common logical fallacies",
+          "Construct valid arguments from evidence",
+          "Solve complex problems using systematic approaches",
+          "Present reasoning clearly to peers"
+        ],
+        "weekly_schedule": [
+          {
+            "day": "Monday",
+            "theme": "The Detective's Mindset",
+            "activities": ["Introduction to logical reasoning", "Mystery solving exercises", "Group debate foundations"]
+          },
+          {
+            "day": "Tuesday", 
+            "theme": "Argument Architecture",
+            "activities": ["Building valid arguments", "Spotting fallacies in media", "Peer review sessions"]
+          }
+        ]
+      },
+      {
+        "id": "bc002",
+        "title": "Numbers That Tell Stories",
+        "subtitle": "Making Math Meaningful",
+        "description": "Transform abstract numbers into compelling narratives. From train carriages of apples to real-world data analysis.",
+        "duration": "5 days",
+        "format": ["online"],
+        "age_range": "13-15",
+        "subjects": ["Mathematics", "Data Visualization", "Storytelling"],
+        "facilitator": "Marcus Rodriguez",
+        "schedule": "Mon-Fri, 10am-4pm",
+        "capacity": 6,
+        "price": 449,
+        "learning_outcomes": [
+          "Visualize large numbers using relatable analogies",
+          "Create data stories that engage audiences",
+          "Apply mathematical concepts to real-world problems",
+          "Develop confidence in mathematical communication"
+        ]
+      }
+    ]
+  }
+  

@@ -1,0 +1,56 @@
+{
+    "students": [
+      {
+        "id": "stu001",
+        "name": "Alex Johnson",
+        "age": 14,
+        "grade": "8th",
+        "interests": ["Physics", "Coding", "Robotics"],
+        "learning_style": "Visual, Hands-on",
+        "knowledge_stream": ["Science", "Technology", "Logic"],
+        "completed_bootcamps": ["bc001"],
+        "upcoming_bootcamps": ["bc002"],
+        "progress": {
+          "critical_thinking": 85,
+          "communication": 72,
+          "problem_solving": 90
+        }
+      },
+      {
+        "id": "stu002", 
+        "name": "Maya Patel",
+        "age": 13,
+        "grade": "7th",
+        "interests": ["Creative Writing", "History", "Languages"],
+        "learning_style": "Verbal, Collaborative",
+        "knowledge_stream": ["Humanities", "Communication", "Creative Arts"],
+        "completed_bootcamps": [],
+        "upcoming_bootcamps": ["bc001"],
+        "progress": {
+          "critical_thinking": 65,
+          "communication": 88,
+          "problem_solving": 70
+        }
+      }
+    ],
+    "parents": [
+      {
+        "id": "par001",
+        "name": "David Johnson",
+        "email": "david.johnson@email.com",
+        "children": ["stu001"],
+        "subscription_status": "active"
+      }
+    ],
+    "facilitators": [
+      {
+        "id": "fac001",
+        "name": "Dr. Sarah Chen",
+        "specialties": ["Logic", "Cognitive Science", "Education"],
+        "bio": "Former university professor with 15 years experience in critical thinking education.",
+        "rating": 4.9,
+        "bootcamps_led": ["bc001", "bc003"]
+      }
+    ]
+  }
+  

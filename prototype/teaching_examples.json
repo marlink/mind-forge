@@ -1,0 +1,23 @@
+{
+    "examples": [
+      {
+        "concept": "Large Numbers Visualization",
+        "abstract_description": "Computer processors perform 11 trillion operations per second",
+        "concrete_analogy": "If 1 million apples fit in 4 train carriages, then 11 trillion apples would need 44,000 train carriages - enough to wrap around the Earth twice!",
+        "visual_aid": "train_carriage_diagram.jpg",
+        "discussion_questions": [
+          "What other huge numbers can we visualize this way?",
+          "Why do you think our brains struggle with abstract numbers?",
+          "How can this help us understand real-world data?"
+        ]
+      },
+      {
+        "concept": "Logical Fallacies",
+        "abstract_description": "Ad hominem attacks undermine arguments by targeting the person instead of the idea",
+        "concrete_analogy": "If someone says 'Your theory about gravity is wrong because you're wearing a red shirt' - that's like rejecting a recipe because you don't like the chef's hat",
+        "real_world_example": "Political debates where candidates attack each other's character instead of discussing policies",
+        "activity": "Find 3 examples of ad hominem attacks in today's news headlines"
+      }
+    ]
+  }
+  

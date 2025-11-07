@@ -1,0 +1,15 @@
+{
+    "templates": [
+      {
+        "type": "welcome_email",
+        "subject": "Welcome to MindForge! Here's What to Expect",
+        "body": "Hi {{parent_name}},\n\nWelcome to MindForge! We're excited to have {{student_name}} join our community of young thinkers.\n\nThis week, your child will be participating in {{bootcamp_title}}. Here's what you can expect:\n\n- Daily sessions from {{schedule}}\n- Focus on developing {{key_skills}}\n- Regular updates on their progress\n\nYou can access their dashboard here: {{dashboard_link}}\n\nBest regards,\nThe MindForge Team"
+      },
+      {
+        "type": "progress_update",
+        "subject": "Progress Update for {{student_name}}",
+        "body": "Hi {{parent_name}},\n\n{{student_name}} has completed Day {{day_number}} of {{bootcamp_title}}! Here's a quick update:\n\nKey achievements: {{achievements}}\nSkills demonstrated: {{skills}}\nAreas for growth: {{growth_areas}}\n\nYou can see detailed progress on their dashboard: {{dashboard_link}}\n\nBest,\n{{facilitator_name}}"
+      }
+    ]
+  }
+  
