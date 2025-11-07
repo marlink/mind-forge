@@ -8,6 +8,7 @@ import { Button } from '../../../components/Button';
 import { Input, Textarea, Checkbox } from '../../../components/Form';
 import { PageLoading } from '../../../components/Loading';
 import { ErrorMessage } from '../../../components/Error';
+import { Navigation } from '../../../components/Navigation';
 import { useToast } from '../../../components/Toast';
 import { useForm, validators } from '../../../lib/useForm';
 import { api } from '../../../lib/api';
@@ -59,16 +60,33 @@ export default function EditBootcampPage() {
   const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
   const [learningOutcomes, setLearningOutcomes] = useState<string[]>(['']);
   const [prerequisites, setPrerequisites] = useState<string[]>(['']);
+  const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null);
 
   useEffect(() => {
     if (bootcampId) {
       fetchBootcamp();
+      fetchUser();
     }
   }, [bootcampId]);
 
+  const fetchUser = async () => {
+    try {
+      const response = await api.get('/users/me');
+      if (response.status === 'success') {
+        setUser({
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+        });
+      }
+    } catch (err) {
+      // Silently fail
+    }
+  };
+
   const fetchBootcamp = async () => {
     try {
-      const response = await api.get<{ bootcamp: Bootcamp }>(`/api/bootcamps/${bootcampId}`);
+      const response = await api.get(`/bootcamps/${bootcampId}`);
       
       if (response.status === 'success') {
         const bootcampData = response.data.bootcamp;
@@ -151,7 +169,7 @@ export default function EditBootcampPage() {
           prerequisites: prerequisites.filter((pr) => pr.trim() !== ''),
         };
 
-        const response = await api.put(`/api/bootcamps/${bootcampId}`, payload);
+        const response = await api.put(`/bootcamps/${bootcampId}`, payload);
         
         if (response.status === 'success') {
           toast.showToast('Bootcamp updated successfully!', 'success');
@@ -242,8 +260,9 @@ export default function EditBootcampPage() {
 
   if (error || !bootcamp) {
     return (
-      <div className="min-h-screen p-8 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <Navigation user={user} />
+        <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
           <ErrorMessage
             title="Failed to load bootcamp"
             message={error || 'Bootcamp not found'}
@@ -258,13 +277,10 @@ export default function EditBootcampPage() {
   }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <Link href={`/bootcamps/${bootcampId}`} className="mb-4 inline-block">
-          <Button variant="outline" size="sm">← Back to Bootcamp</Button>
-        </Link>
-
-        <Card title="Edit Bootcamp" className="mb-6">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation user={user} showBackButton backHref={`/bootcamps/${bootcampId}`} backLabel="Back to Bootcamp" />
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+        <Card title="Edit Bootcamp" className="mb-6 animate-in fade-in">
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Title"

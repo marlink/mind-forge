@@ -1,11 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Input, Textarea, Select, Checkbox } from '../../components/Form';
+import { Navigation } from '../../components/Navigation';
 import { useToast } from '../../components/Toast';
 import { useForm, validators } from '../../lib/useForm';
 import { api } from '../../lib/api';
@@ -36,6 +37,26 @@ export default function NewBootcampPage() {
   const toast = useToast();
   const [learningOutcomes, setLearningOutcomes] = useState<string[]>(['']);
   const [prerequisites, setPrerequisites] = useState<string[]>(['']);
+  const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const response = await api.get('/users/me');
+      if (response.status === 'success') {
+        setUser({
+          id: response.data.user.id,
+          name: response.data.user.name,
+          email: response.data.user.email,
+        });
+      }
+    } catch (err) {
+      // Silently fail
+    }
+  };
 
   const {
     values,
@@ -97,7 +118,7 @@ export default function NewBootcampPage() {
           weeklySchedule: {},
         };
 
-        const response = await api.post('/api/bootcamps', payload);
+        const response = await api.post('/bootcamps', payload);
         
         if (response.status === 'success') {
           toast.showToast('Bootcamp created successfully!', 'success');
@@ -164,13 +185,10 @@ export default function NewBootcampPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-4xl mx-auto">
-        <Link href="/dashboard" className="mb-4 inline-block">
-          <Button variant="outline" size="sm">← Back to Dashboard</Button>
-        </Link>
-
-        <Card title="Create New Bootcamp" className="mb-6">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation user={user} showBackButton backHref="/dashboard" backLabel="Back to Dashboard" />
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+        <Card title="Create New Bootcamp" className="mb-6 animate-in fade-in">
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Title"

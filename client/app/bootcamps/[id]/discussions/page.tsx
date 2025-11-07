@@ -195,26 +195,38 @@ export default function DiscussionsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation user={user} showBackButton backHref={`/bootcamps/${bootcampId}`} backLabel="Back to Bootcamp" />
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-4xl font-bold">Discussion Topics</h1>
-            {bootcamp && <p className="text-gray-600 mt-1">{bootcamp.title}</p>}
+            <h1 className="text-3xl sm:text-4xl font-bold">Discussion Topics</h1>
+            {bootcamp && <p className="text-gray-600 mt-1 text-sm sm:text-base">{bootcamp.title}</p>}
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
             {isFacilitatorOrAdmin && (
-              <Button onClick={() => { setEditingDiscussion(null); resetForm(); setIsCreateOpen(true); }}>
+              <Button 
+                onClick={() => { setEditingDiscussion(null); resetForm(); setIsCreateOpen(true); }}
+                className="w-full sm:w-auto"
+                aria-label="Create new discussion topic"
+              >
                 Create Discussion Topic
               </Button>
             )}
-            <Link href={`/bootcamps/${bootcampId}`}>
-              <Button variant="outline">Back to Bootcamp</Button>
+            <Link href={`/bootcamps/${bootcampId}`} className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">Back to Bootcamp</Button>
             </Link>
           </div>
         </div>
 
         <div className="mb-6">
-            <Input label="Filter by Day" type="number" value={dayFilter} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDayFilter(e.target.value)} placeholder="Enter day number" className="max-w-xs" />
+            <Input 
+              label="Filter by Day" 
+              type="number" 
+              value={dayFilter} 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDayFilter(e.target.value)} 
+              placeholder="Enter day number" 
+              className="max-w-xs w-full" 
+              aria-label="Filter discussions by day number"
+            />
         </div>
 
         {error ? (
@@ -223,13 +235,78 @@ export default function DiscussionsPage() {
           <EmptyState title="No discussion topics" message={isFacilitatorOrAdmin ? 'Create your first discussion topic to engage students' : 'No discussion topics available yet'} action={isFacilitatorOrAdmin ? <Button onClick={() => setIsCreateOpen(true)}>Create Discussion Topic</Button> : undefined} />
         ) : (
           <div className="grid gap-6">
-            {discussions.map((discussion) => (
-              <Card key={discussion.id} title={<div className="flex items-center space-x-2"><span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm font-medium">Day {discussion.day}</span><span>{discussion.title}</span></div>} headerActions={isFacilitatorOrAdmin && <div className="flex space-x-2"><Button variant="outline" size="sm" onClick={() => handleEdit(discussion)}>Edit</Button><Button variant="danger" size="sm" onClick={() => handleDelete(discussion.id)}>Delete</Button></div>}>
+            {discussions.map((discussion, index) => (
+              <Card 
+                key={discussion.id} 
+                title={
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm font-medium">
+                      Day {discussion.day}
+                    </span>
+                    <span className="text-lg sm:text-xl">{discussion.title}</span>
+                  </div>
+                } 
+                headerActions={
+                  isFacilitatorOrAdmin && (
+                    <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleEdit(discussion)}
+                        aria-label={`Edit discussion topic: ${discussion.title}`}
+                        className="w-full sm:w-auto"
+                      >
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="danger" 
+                        size="sm" 
+                        onClick={() => handleDelete(discussion.id)}
+                        aria-label={`Delete discussion topic: ${discussion.title}`}
+                        className="w-full sm:w-auto"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  )
+                }
+                className="hover:shadow-lg transition-all duration-300 animate-in fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
                 <div className="space-y-4">
-                  <div><h3 className="font-semibold text-gray-700 mb-2">Prompt</h3><p className="text-gray-600">{discussion.prompt}</p></div>
-                  <div><h3 className="font-semibold text-gray-700 mb-2">Guidance</h3><p className="text-gray-600">{discussion.guidance}</p></div>
-                  {discussion.expectedOutcomes.length > 0 && <div><h3 className="font-semibold text-gray-700 mb-2">Expected Outcomes</h3><ul className="list-disc list-inside space-y-1 text-gray-600">{discussion.expectedOutcomes.map((outcome, idx) => <li key={idx}>{outcome}</li>)}</ul></div>}
-                  {discussion.tags.length > 0 && <div><h3 className="font-semibold text-gray-700 mb-2">Tags</h3><div className="flex flex-wrap gap-2">{discussion.tags.map((tag) => <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">{tag}</span>)}</div></div>}
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Prompt</h3>
+                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{discussion.prompt}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Guidance</h3>
+                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{discussion.guidance}</p>
+                  </div>
+                  {discussion.expectedOutcomes.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Expected Outcomes</h3>
+                      <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm sm:text-base">
+                        {discussion.expectedOutcomes.map((outcome, idx) => (
+                          <li key={idx}>{outcome}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {discussion.tags.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Tags</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {discussion.tags.map((tag) => (
+                          <span 
+                            key={tag} 
+                            className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs sm:text-sm"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card>
             ))}

@@ -36,6 +36,11 @@
    ```bash
    docker-compose up -d
    ```
+   
+   Or use the helper script:
+   ```bash
+   ./scripts/start-db.sh
+   ```
 
 4. **Set up database**
    ```bash
@@ -53,6 +58,44 @@
 - Backend API: `http://localhost:3001`
 - Frontend App: `http://localhost:3000`
 - Prisma Studio: `npm run db:studio` (in server directory)
+
+## Troubleshooting
+
+### Database Connection Errors
+
+If you see errors like "Can't reach database server at `localhost:5432`":
+
+1. **Check if Docker is running**
+   ```bash
+   docker ps
+   ```
+
+2. **Start the PostgreSQL container**
+   ```bash
+   docker-compose up -d postgres
+   ```
+
+3. **Verify the database is ready**
+   ```bash
+   docker exec mindforge-postgres pg_isready -U mindforge
+   ```
+
+4. **Check your DATABASE_URL** in `server/.env` matches:
+   ```
+   postgresql://mindforge:mindforge_dev_password@localhost:5432/mindforge_dev?schema=public
+   ```
+
+5. **Run database migrations**
+   ```bash
+   npm run db:generate
+   npm run db:migrate
+   ```
+
+### Port Already in Use
+
+If port 3001 or 5432 is already in use:
+- Change `PORT` in `server/.env` for the API
+- Change the port mapping in `docker-compose.yml` for PostgreSQL
 
 ## Project Structure
 

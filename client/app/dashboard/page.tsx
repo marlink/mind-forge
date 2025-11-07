@@ -10,6 +10,8 @@ import { AdminDashboard } from '../components/dashboards/AdminDashboard';
 import { Button } from '../components/Button';
 import { PageLoading } from '../components/Loading';
 import { ErrorMessage } from '../components/Error';
+import { Navigation } from '../components/Navigation';
+import { api } from '../lib/api';
 
 interface User {
   id: string;
@@ -49,25 +51,15 @@ export default function DashboardPage() {
     if (!token) return;
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/users/me`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        setUser(data.data.user);
+      const response = await api.get('/users/me');
+      if (response.status === 'success') {
+        setUser(response.data.user);
         setError(null);
       } else {
         setError('Failed to load user data');
       }
-    } catch (err) {
-      setError('Failed to connect to server');
+    } catch (err: any) {
+      setError(err.message || 'Failed to connect to server');
     } finally {
       setLoading(false);
     }
@@ -84,8 +76,9 @@ export default function DashboardPage() {
 
   if (error || !user) {
     return (
-      <div className="min-h-screen p-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <Navigation user={null} />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <ErrorMessage
             title="Failed to load dashboard"
             message={error || 'User not found'}
@@ -115,7 +108,7 @@ export default function DashboardPage() {
         return <AdminDashboard userId={user.id} />;
       default:
         return (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 animate-in fade-in">
             <p className="text-gray-600">Dashboard for role "{user.role}" is not yet implemented.</p>
           </div>
         );
@@ -123,26 +116,27 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation user={{ id: user.id, name: user.name, email: user.email }} />
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8 animate-in fade-in">
           <div>
-            <h1 className="text-4xl font-bold">Dashboard</h1>
-            <p className="text-gray-600 mt-1">Welcome back, {user.name}!</p>
+            <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Welcome back, {user.name}!</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Link href="/bootcamps">
-              <Button variant="outline">Browse Bootcamps</Button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+            <Link href="/bootcamps" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">Browse Bootcamps</Button>
             </Link>
-            <Button variant="secondary" onClick={handleLogout}>
+            <Button variant="secondary" onClick={handleLogout} className="w-full sm:w-auto" aria-label="Logout">
               Logout
             </Button>
           </div>
         </div>
 
         {/* Role-based Dashboard */}
-        {renderDashboard()}
+        <div id="main-content">{renderDashboard()}</div>
       </div>
     </div>
   );

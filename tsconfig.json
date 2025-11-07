@@ -18,6 +18,14 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "exclude": ["node_modules", "dist", "build", ".next"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "client/**/*",
+    "server/**/*",
+    "shared/**/*"
+  ]
 }
 

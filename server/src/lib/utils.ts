@@ -3,18 +3,35 @@ import prisma from '../lib/prisma.js';
 import { AppError } from '../middleware/errorHandler.js';
 
 /**
+ * Handle database connection errors consistently
+ */
+export function handleDatabaseError(error: any): never {
+  if (error.code === 'P1001' || error.message?.includes('Can\'t reach database server')) {
+    throw new AppError(
+      'Database connection failed. Please ensure PostgreSQL is running. Run: docker-compose up -d postgres',
+      503
+    );
+  }
+  throw error;
+}
+
+/**
  * Check if user is facilitator or admin
  */
 export async function verifyFacilitatorOrAdmin(userId: string) {
-  const facilitator = await prisma.facilitator.findUnique({
-    where: { userId },
-  });
+  try {
+    const facilitator = await prisma.facilitator.findUnique({
+      where: { userId },
+    });
 
-  const isAdmin = await prisma.admin.findUnique({
-    where: { userId },
-  });
+    const isAdmin = await prisma.admin.findUnique({
+      where: { userId },
+    });
 
-  return { facilitator, isAdmin, hasAccess: !!facilitator || !!isAdmin };
+    return { facilitator, isAdmin, hasAccess: !!facilitator || !!isAdmin };
+  } catch (error) {
+    handleDatabaseError(error);
+  }
 }
 
 /**

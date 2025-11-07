@@ -47,9 +47,21 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { email, password, name, role, ...roleSpecificData } = validatedData;
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    let existingUser;
+    try {
+      existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+    } catch (dbError: any) {
+      // Handle database connection errors
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        throw new AppError(
+          'Database connection failed. Please ensure PostgreSQL is running. Run: docker-compose up -d postgres',
+          503
+        );
+      }
+      throw dbError;
+    }
 
     if (existingUser) {
       throw new AppError('User with this email already exists', 400);
@@ -59,7 +71,9 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Create user and role-specific record in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    let result;
+    try {
+      result = await prisma.$transaction(async (tx) => {
       // Create base user
       const user = await tx.user.create({
         data: {
@@ -119,6 +133,16 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
       return user;
     });
+    } catch (dbError: any) {
+      // Handle database connection errors
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        throw new AppError(
+          'Database connection failed. Please ensure PostgreSQL is running. Run: docker-compose up -d postgres',
+          503
+        );
+      }
+      throw dbError;
+    }
 
     // Generate token
     const token = generateToken(result.id, result.email, result.role);
@@ -150,15 +174,27 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = validatedData;
 
     // Find user with role-specific data
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        Student: true,
-        Parent: true,
-        Facilitator: true,
-        Admin: true,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          Student: true,
+          Parent: true,
+          Facilitator: true,
+          Admin: true,
+        },
+      });
+    } catch (dbError: any) {
+      // Handle database connection errors
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        throw new AppError(
+          'Database connection failed. Please ensure PostgreSQL is running. Run: docker-compose up -d postgres',
+          503
+        );
+      }
+      throw dbError;
+    }
 
     if (!user || !user.isActive) {
       throw new AppError('Invalid email or password', 401);
@@ -205,15 +241,27 @@ export const getCurrentUser = async (
       throw new AppError('Authentication required', 401);
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        Student: true,
-        Parent: true,
-        Facilitator: true,
-        Admin: true,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          Student: true,
+          Parent: true,
+          Facilitator: true,
+          Admin: true,
+        },
+      });
+    } catch (dbError: any) {
+      // Handle database connection errors
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        throw new AppError(
+          'Database connection failed. Please ensure PostgreSQL is running. Run: docker-compose up -d postgres',
+          503
+        );
+      }
+      throw dbError;
+    }
 
     if (!user) {
       throw new AppError('User not found', 404);

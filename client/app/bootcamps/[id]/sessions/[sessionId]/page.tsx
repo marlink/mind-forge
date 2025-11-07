@@ -12,6 +12,7 @@ import { Input, Textarea } from '../../../../components/Form';
 import { useToast } from '../../../../components/Toast';
 import { useForm, validators } from '../../../../lib/useForm';
 import { api } from '../../../../lib/api';
+import { Navigation } from '../../../../components/Navigation';
 
 interface Activity {
   id: string;
@@ -70,6 +71,7 @@ export default function SessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const toast = useToast();
@@ -82,25 +84,19 @@ export default function SessionDetailPage() {
   }, [sessionId]);
 
   const fetchUserRole = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/users/me`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      if (data.status === 'success') {
-        const user = data.data.user;
-        if (user.admin) setUserRole('ADMIN');
-        else if (user.facilitator) setUserRole('FACILITATOR');
-        else if (user.parent) setUserRole('PARENT');
-        else if (user.student) setUserRole('STUDENT');
+      const response = await api.get<{ user: any }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
+        const userData = response.data.user;
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+        });
+        if (userData.admin) setUserRole('ADMIN');
+        else if (userData.facilitator) setUserRole('FACILITATOR');
+        else if (userData.parent) setUserRole('PARENT');
+        else if (userData.student) setUserRole('STUDENT');
       }
     } catch (err) {
       // Silently fail
@@ -109,24 +105,17 @@ export default function SessionDetailPage() {
 
   const fetchSession = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/sessions/${sessionId}`,
-        {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-        }
-      );
+      setLoading(true);
+      const response = await api.get<{ session: Session }>(`/sessions/${sessionId}`);
 
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        setSession(data.data.session);
+      if (response.status === 'success' && response.data?.session) {
+        setSession(response.data.session);
         setError(null);
       } else {
         setError('Session not found');
       }
-    } catch (err) {
-      setError('An error occurred while loading session details');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while loading session details');
     } finally {
       setLoading(false);
     }
@@ -142,7 +131,7 @@ export default function SessionDetailPage() {
 
     try {
       const response = await api.put(
-        `/api/sessions/${sessionId}/activities/${editingActivity.id}`,
+        `/sessions/${sessionId}/activities/${editingActivity.id}`,
         updatedData
       );
 
@@ -163,8 +152,9 @@ export default function SessionDetailPage() {
 
   if (error || !session) {
     return (
-      <div className="min-h-screen p-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <Navigation user={user} />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <ErrorMessage
             title="Failed to load session"
             message={error || 'Session not found'}
@@ -184,28 +174,25 @@ export default function SessionDetailPage() {
   const lateCount = session.attendance.filter(a => a.status === 'LATE').length;
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <Link href={`/bootcamps/${bootcampId}`} className="mb-4 inline-block">
-          <Button variant="outline" size="sm">← Back to Bootcamp</Button>
-        </Link>
-
+    <div className="min-h-screen bg-gray-50">
+      <Navigation user={user} showBackButton backHref={`/bootcamps/${bootcampId}/sessions`} backLabel="Back to Sessions" />
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
+        <div className="bg-white rounded-lg shadow-md p-6 sm:p-8 mb-6 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                 <span className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
                   Day {session.day}
                 </span>
-                <h1 className="text-4xl font-bold">{session.theme}</h1>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">{session.theme}</h1>
               </div>
-              <p className="text-xl text-gray-600 mb-4">
+              <p className="text-lg sm:text-xl text-gray-600 mb-4">
                 {session.Bootcamp.title}
               </p>
               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   {new Date(session.date).toLocaleDateString('en-US', {
@@ -216,13 +203,13 @@ export default function SessionDetailPage() {
                   })}
                 </div>
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   {session.startTime} - {session.endTime}
                 </div>
                 <div className="flex items-center">
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   Facilitator: {session.Bootcamp.Facilitator.User.name}
@@ -230,9 +217,9 @@ export default function SessionDetailPage() {
               </div>
             </div>
             {isFacilitatorOrAdmin && (
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Link href={`/bootcamps/${bootcampId}/sessions/${sessionId}/edit`}>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
                     Edit Session
                   </Button>
                 </Link>
@@ -243,45 +230,45 @@ export default function SessionDetailPage() {
 
         {/* Attendance Summary (for facilitators/admins) */}
         {isFacilitatorOrAdmin && session.attendance.length > 0 && (
-          <Card title="Attendance Summary" className="mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <Card title="Attendance Summary" className="mb-6 animate-in fade-in" style={{ animationDelay: '100ms' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-3xl font-bold text-green-600">{presentCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-green-600">{presentCount}</div>
                 <div className="text-sm text-gray-600 mt-1">Present</div>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg">
-                <div className="text-3xl font-bold text-red-600">{absentCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-red-600">{absentCount}</div>
                 <div className="text-sm text-gray-600 mt-1">Absent</div>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <div className="text-3xl font-bold text-yellow-600">{lateCount}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{lateCount}</div>
                 <div className="text-sm text-gray-600 mt-1">Late</div>
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="font-semibold mb-2">Attendance Details</h3>
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">Attendance Details</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Join Time</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Engagement</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Join Time</th>
+                      <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Engagement</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {session.attendance.map((record) => (
-                      <tr key={record.id}>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                      <tr key={record.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-3 sm:px-4 py-3 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900">
                               {record.Student.User.name}
                             </div>
-                            <div className="text-sm text-gray-500">{record.Student.User.email}</div>
+                            <div className="text-xs sm:text-sm text-gray-500">{record.Student.User.email}</div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-3 sm:px-4 py-3 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded-full ${
                               record.status === 'PRESENT'
@@ -294,12 +281,12 @@ export default function SessionDetailPage() {
                             {record.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                           {record.joinTime
                             ? new Date(record.joinTime).toLocaleTimeString()
                             : '-'}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                           {record.engagementScore !== null && record.engagementScore !== undefined
                             ? `${record.engagementScore}%`
                             : '-'}
@@ -321,30 +308,32 @@ export default function SessionDetailPage() {
               <span className="text-sm text-gray-600">{session.activities.length} activities</span>
             )
           }
-          className="mb-6"
+          className="mb-6 animate-in fade-in"
+          style={{ animationDelay: '150ms' }}
         >
           {session.activities.length > 0 ? (
             <div className="space-y-6">
               {session.activities.map((activity, index) => (
                 <div
                   key={activity.id}
-                  className="border-l-4 border-primary-500 pl-6 pb-6 relative"
+                  className="border-l-4 border-primary-500 pl-4 sm:pl-6 pb-6 relative animate-in fade-in"
+                  style={{ animationDelay: `${200 + index * 50}ms` }}
                 >
                   {index < session.activities.length - 1 && (
                     <div className="absolute left-[-2px] top-12 bottom-[-24px] w-0.5 bg-gray-200"></div>
                   )}
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="px-2 py-1 bg-primary-100 text-primary-800 rounded text-xs font-medium">
                           {activity.time}
                         </span>
                         <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
                           {activity.type}
                         </span>
-                        <h3 className="font-semibold text-lg">{activity.title}</h3>
+                        <h3 className="font-semibold text-base sm:text-lg">{activity.title}</h3>
                       </div>
-                      <p className="text-gray-700 mb-3">{activity.description}</p>
+                      <p className="text-gray-700 mb-3 text-sm sm:text-base">{activity.description}</p>
 
                       {activity.learningObjectives && activity.learningObjectives.length > 0 && (
                         <div className="mb-3">
@@ -387,11 +376,13 @@ export default function SessionDetailPage() {
                       )}
                     </div>
                     {isFacilitatorOrAdmin && (
-                      <div className="ml-4">
+                      <div className="sm:ml-4">
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handleEditActivity(activity)}
+                          className="w-full sm:w-auto"
+                          aria-label={`Edit activity: ${activity.title}`}
                         >
                           Edit
                         </Button>

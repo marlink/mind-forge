@@ -9,7 +9,9 @@ import { PageLoading } from '../../../components/Loading';
 import { ErrorMessage, EmptyState } from '../../../components/Error';
 import { Table } from '../../../components/Table';
 import { Select } from '../../../components/Form';
+import { Navigation } from '../../../components/Navigation';
 import { useToast } from '../../../components/Toast';
+import { api } from '../../../lib/api';
 
 interface Session {
   id: string;
@@ -44,6 +46,7 @@ export default function SessionsListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null);
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all');
   const [sortBy, setSortBy] = useState<'day' | 'date'>('day');
 
@@ -56,25 +59,19 @@ export default function SessionsListPage() {
   }, [bootcampId, filter]);
 
   const fetchUserRole = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/users/me`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      if (data.status === 'success') {
-        const user = data.data.user;
-        if (user.admin) setUserRole('ADMIN');
-        else if (user.facilitator) setUserRole('FACILITATOR');
-        else if (user.parent) setUserRole('PARENT');
-        else if (user.student) setUserRole('STUDENT');
+      const response = await api.get('/users/me');
+      if (response.status === 'success') {
+        const userData = response.data.user;
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+        });
+        if (userData.admin) setUserRole('ADMIN');
+        else if (userData.facilitator) setUserRole('FACILITATOR');
+        else if (userData.parent) setUserRole('PARENT');
+        else if (userData.student) setUserRole('STUDENT');
       }
     } catch (err) {
       // Silently fail
@@ -83,13 +80,9 @@ export default function SessionsListPage() {
 
   const fetchBootcamp = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/bootcamps/${bootcampId}`
-      );
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        setBootcamp(data.data.bootcamp);
+      const response = await api.get(`/bootcamps/${bootcampId}`);
+      if (response.status === 'success') {
+        setBootcamp(response.data.bootcamp);
       }
     } catch (err) {
       // Silently fail
@@ -98,18 +91,11 @@ export default function SessionsListPage() {
 
   const fetchSessions = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/bootcamps/${bootcampId}/sessions`,
-        {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-        }
-      );
+      setLoading(true);
+      const response = await api.get(`/bootcamps/${bootcampId}/sessions`);
 
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        let fetchedSessions = data.data.sessions || [];
+      if (response.status === 'success') {
+        let fetchedSessions = response.data.sessions || [];
         
         // Apply filter
         const now = new Date();
@@ -133,8 +119,8 @@ export default function SessionsListPage() {
       } else {
         setError('Failed to load sessions');
       }
-    } catch (err) {
-      setError('An error occurred while loading sessions');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while loading sessions');
     } finally {
       setLoading(false);
     }
@@ -148,8 +134,9 @@ export default function SessionsListPage() {
 
   if (error && !bootcamp) {
     return (
-      <div className="min-h-screen p-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <Navigation user={user} />
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <ErrorMessage
             title="Failed to load sessions"
             message={error || 'Bootcamp not found'}
@@ -252,36 +239,34 @@ export default function SessionsListPage() {
   ];
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <Link href={`/bootcamps/${bootcampId}`} className="mb-4 inline-block">
-          <Button variant="outline" size="sm">← Back to Bootcamp</Button>
-        </Link>
-
+    <div className="min-h-screen bg-gray-50">
+      <Navigation user={user} showBackButton backHref={`/bootcamps/${bootcampId}`} backLabel="Back to Bootcamp" />
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8 animate-in fade-in">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
             Sessions
             {bootcamp && (
-              <span className="text-2xl font-normal text-gray-600 ml-2">
+              <span className="text-xl sm:text-2xl font-normal text-gray-600 ml-2">
                 - {bootcamp.title}
               </span>
             )}
           </h1>
-          <p className="text-gray-600">View and manage all sessions for this bootcamp</p>
+          <p className="text-gray-600 text-sm sm:text-base">View and manage all sessions for this bootcamp</p>
         </div>
 
         {/* Filters and Actions */}
-        <Card className="mb-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
+        <Card className="mb-6 animate-in fade-in" style={{ animationDelay: '100ms' }}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">Filter:</label>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant={filter === 'all' ? 'primary' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('all')}
+                    aria-label="Show all sessions"
                   >
                     All
                   </Button>
@@ -289,6 +274,7 @@ export default function SessionsListPage() {
                     variant={filter === 'upcoming' ? 'primary' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('upcoming')}
+                    aria-label="Show upcoming sessions"
                   >
                     Upcoming
                   </Button>
@@ -296,12 +282,13 @@ export default function SessionsListPage() {
                     variant={filter === 'past' ? 'primary' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('past')}
+                    aria-label="Show past sessions"
                   >
                     Past
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">Sort by:</label>
                 <Select
                   value={sortBy}
@@ -313,18 +300,22 @@ export default function SessionsListPage() {
                     { value: 'day', label: 'Day Number' },
                     { value: 'date', label: 'Date' },
                   ]}
-                  className="w-40"
+                  className="w-full sm:w-40"
                 />
               </div>
             </div>
             {isFacilitatorOrAdmin && (
-              <Button>Create Session</Button>
+              <Button className="w-full sm:w-auto">Create Session</Button>
             )}
           </div>
         </Card>
 
         {/* Sessions Table */}
-        <Card title={`${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`}>
+        <Card 
+          title={`${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`}
+          className="animate-in fade-in"
+          style={{ animationDelay: '150ms' }}
+        >
           {error ? (
             <ErrorMessage message={error} onRetry={fetchSessions} />
           ) : sessions.length > 0 ? (
@@ -359,24 +350,24 @@ export default function SessionsListPage() {
 
         {/* Summary Stats */}
         {sessions.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <Card>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 animate-in fade-in" style={{ animationDelay: '200ms' }}>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-600">{sessions.length}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary-600">{sessions.length}</div>
                 <div className="text-sm text-gray-600 mt-1">Total Sessions</div>
               </div>
             </Card>
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">
+                <div className="text-2xl sm:text-3xl font-bold text-green-600">
                   {sessions.filter((s) => new Date(s.date) >= new Date()).length}
                 </div>
                 <div className="text-sm text-gray-600 mt-1">Upcoming</div>
               </div>
             </Card>
-            <Card>
+            <Card className="hover:shadow-lg transition-all duration-300">
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-600">
+                <div className="text-2xl sm:text-3xl font-bold text-gray-600">
                   {sessions.filter((s) => new Date(s.date) < new Date()).length}
                 </div>
                 <div className="text-sm text-gray-600 mt-1">Past</div>

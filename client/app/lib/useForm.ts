@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from 'react';
 
-export type ValidationRule<T = any> = {
-  validator: (value: T, formData?: Record<string, any>) => boolean | string;
+export type ValidationRule<T = unknown> = {
+  validator: (value: T, formData?: Record<string, unknown>) => boolean | string;
   message?: string;
 };
 
@@ -62,7 +62,7 @@ export function useForm<T extends Record<string, any>>({
       const fieldName = key as keyof T;
       const error = validateField(fieldName, values[fieldName]);
       if (error) {
-        (newErrors as any)[fieldName] = error;
+        newErrors[fieldName] = error;
         isValid = false;
       }
     });
@@ -77,11 +77,11 @@ export function useForm<T extends Record<string, any>>({
       const fieldName = name as keyof T;
       
       // Handle checkbox and radio inputs
-      let finalValue: any = value;
+      let finalValue: T[keyof T] = value as T[keyof T];
       if (type === 'checkbox') {
-        finalValue = (e.target as HTMLInputElement).checked;
+        finalValue = (e.target as HTMLInputElement).checked as T[keyof T];
       } else if (type === 'number') {
-        finalValue = value === '' ? '' : Number(value);
+        finalValue = (value === '' ? '' : Number(value)) as T[keyof T];
       }
 
       const newValues = { ...values, [fieldName]: finalValue };
@@ -264,7 +264,7 @@ export const validators = {
     message,
   }),
 
-  match: (fieldName: string, message?: string): ValidationRule<any> => ({
+  match: <T extends string | number>(fieldName: string, message?: string): ValidationRule<T> => ({
     validator: (value, formData) => {
       if (!formData) return false;
       return value === formData[fieldName];

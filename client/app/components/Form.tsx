@@ -29,8 +29,9 @@ export function Input({
         className={`
           w-full px-4 py-2 border rounded-lg
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-colors
-          ${error ? 'border-red-500' : 'border-gray-300'}
+          transition-all duration-200
+          hover:border-gray-400
+          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
           ${className}
         `}
         {...props}
@@ -74,8 +75,9 @@ export function Textarea({
         className={`
           w-full px-4 py-2 border rounded-lg
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-colors resize-y
-          ${error ? 'border-red-500' : 'border-gray-300'}
+          transition-all duration-200 resize-y
+          hover:border-gray-400
+          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
           ${className}
         `}
         {...props}
@@ -121,8 +123,9 @@ export function Select({
         className={`
           w-full px-4 py-2 border rounded-lg bg-white
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-colors
-          ${error ? 'border-red-500' : 'border-gray-300'}
+          transition-all duration-200
+          hover:border-gray-400 cursor-pointer
+          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
           ${className}
         `}
         {...props}

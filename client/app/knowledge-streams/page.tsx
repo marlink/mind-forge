@@ -125,38 +125,67 @@ export default function KnowledgeStreamsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation user={user} showBackButton backHref="/dashboard" backLabel="Back to Dashboard" />
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8 animate-in fade-in">
           <div>
-            <h1 className="text-4xl font-bold">Knowledge Streams</h1>
-            <p className="text-gray-600 mt-1">Explore learning paths and skill development tracks</p>
+            <h1 className="text-3xl sm:text-4xl font-bold">Knowledge Streams</h1>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">Explore learning paths and skill development tracks</p>
           </div>
-          <div className="flex items-center space-x-4">
-            {isFacilitatorOrAdmin && <Button onClick={() => setIsAssignOpen(true)}>Assign Stream to Student</Button>}
-            <Link href="/dashboard"><Button variant="outline">Back to Dashboard</Button></Link>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+            {isFacilitatorOrAdmin && (
+              <Button 
+                onClick={() => setIsAssignOpen(true)}
+                className="w-full sm:w-auto"
+                aria-label="Assign knowledge stream to student"
+              >
+                Assign Stream to Student
+              </Button>
+            )}
+            <Link href="/dashboard" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">Back to Dashboard</Button>
+            </Link>
           </div>
         </div>
 
         {error ? (
           <ErrorMessage message={error} onRetry={fetchStreams} />
         ) : streams.length === 0 ? (
-          <EmptyState title="No knowledge streams" message="Knowledge streams will appear here when available" />
+          <EmptyState 
+            title="No knowledge streams" 
+            message="Knowledge streams will appear here when available" 
+          />
         ) : (
           <div className="grid gap-6">
-            {streams.map((stream) => (
-              <Card key={stream.id} title={stream.name} headerActions={<span className="text-sm text-gray-600">{stream._count.studentStreams} students assigned</span>}>
+            {streams.map((stream, index) => (
+              <Card 
+                key={stream.id} 
+                title={stream.name}
+                headerActions={
+                  <span className="text-sm text-gray-600">
+                    {stream._count.studentStreams} {stream._count.studentStreams === 1 ? 'student' : 'students'} assigned
+                  </span>
+                }
+                className="hover:shadow-lg transition-all duration-300 animate-in fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
                 <div className="space-y-4">
-                  <p className="text-gray-600">{stream.description}</p>
+                  <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{stream.description}</p>
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-3">Levels</h3>
-                    <div className="space-y-2">
-                      {stream.levels.map((level) => (
-                        <div key={level.id} className="border border-gray-200 rounded-lg p-3">
-                          <div className="flex items-start space-x-3">
-                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">Level {level.level}</span>
+                    <h3 className="font-semibold text-gray-700 mb-3 text-sm sm:text-base">Levels</h3>
+                    <div className="space-y-3">
+                      {stream.levels.map((level, levelIndex) => (
+                        <div 
+                          key={level.id} 
+                          className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:border-primary-300 transition-colors duration-200 animate-in fade-in"
+                          style={{ animationDelay: `${(index * 50) + (levelIndex * 30)}ms` }}
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium self-start">
+                              Level {level.level}
+                            </span>
                             <div className="flex-1">
-                              <h4 className="font-semibold">{level.title}</h4>
-                              <p className="text-sm text-gray-600 mt-1">{level.description}</p>
+                              <h4 className="font-semibold text-sm sm:text-base">{level.title}</h4>
+                              <p className="text-sm text-gray-600 mt-1 leading-relaxed">{level.description}</p>
                             </div>
                           </div>
                         </div>
@@ -169,11 +198,55 @@ export default function KnowledgeStreamsPage() {
           </div>
         )}
 
-        <Modal isOpen={isAssignOpen} onClose={() => { setIsAssignOpen(false); setSelectedStream(null); setSelectedStudent(''); }} title="Assign Knowledge Stream to Student" size="lg" footer={<><Button variant="outline" onClick={() => { setIsAssignOpen(false); setSelectedStream(null); setSelectedStudent(''); }}>Cancel</Button><Button onClick={handleAssign} disabled={!selectedStream || !selectedStudent}>Assign</Button></>}>
+        <Modal 
+          isOpen={isAssignOpen} 
+          onClose={() => { setIsAssignOpen(false); setSelectedStream(null); setSelectedStudent(''); }} 
+          title="Assign Knowledge Stream to Student" 
+          size="lg" 
+          footer={
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => { setIsAssignOpen(false); setSelectedStream(null); setSelectedStudent(''); }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAssign} 
+                disabled={!selectedStream || !selectedStudent}
+              >
+                Assign
+              </Button>
+            </>
+          }
+        >
           <div className="space-y-4">
-            <Select label="Knowledge Stream" value={selectedStream?.id || ''} onChange={(e) => { const stream = streams.find((s) => s.id === e.target.value); setSelectedStream(stream || null); }} options={streams.map((stream) => ({ value: stream.id, label: stream.name }))} required />
-            <Select label="Student" value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)} options={students.map((student) => ({ value: student.id, label: `${student.User.name} (${student.User.email})` }))} required />
-            {selectedStream && <div className="mt-4 p-4 bg-gray-50 rounded-lg"><h4 className="font-semibold mb-2">{selectedStream.name}</h4><p className="text-sm text-gray-600">{selectedStream.description}</p></div>}
+            <Select 
+              label="Knowledge Stream" 
+              value={selectedStream?.id || ''} 
+              onChange={(e) => { 
+                const stream = streams.find((s) => s.id === e.target.value); 
+                setSelectedStream(stream || null); 
+              }} 
+              options={streams.map((stream) => ({ value: stream.id, label: stream.name }))} 
+              required 
+            />
+            <Select 
+              label="Student" 
+              value={selectedStudent} 
+              onChange={(e) => setSelectedStudent(e.target.value)} 
+              options={students.map((student) => ({ 
+                value: student.id, 
+                label: `${student.User.name} (${student.User.email})` 
+              }))} 
+              required 
+            />
+            {selectedStream && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h4 className="font-semibold mb-2 text-sm sm:text-base">{selectedStream.name}</h4>
+                <p className="text-sm text-gray-600 leading-relaxed">{selectedStream.description}</p>
+              </div>
+            )}
           </div>
         </Modal>
       </div>
