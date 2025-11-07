@@ -61,46 +61,46 @@ export function Modal({
       aria-modal="true"
     >
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        {/* Overlay with backdrop blur */}
+        {/* Overlay with premium backdrop blur */}
         <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity animate-in fade-in"
+          className="fixed inset-0 bg-gradient-to-br from-dark-900/80 via-dark-800/70 to-dark-900/80 backdrop-blur-md transition-opacity animate-in fade-in"
           onClick={closeOnOverlayClick ? onClose : undefined}
           aria-hidden="true"
         />
 
         {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full sm:w-full animate-in scale-in">
-          <div className={`bg-white px-4 pt-5 pb-4 sm:p-6 ${sizes[size]} mx-auto`}>
+        <div className="inline-block align-bottom glass rounded-2xl text-left overflow-hidden shadow-premium-xl transform transition-all sm:my-8 sm:align-middle w-full sm:w-full animate-in scale-in border border-white/20">
+          <div className={`px-6 pt-6 pb-6 sm:p-8 ${sizes[size]} mx-auto`}>
             {title && (
-              <div className="flex justify-between items-start mb-4 pb-4 border-b border-gray-200">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900" id="modal-title">
+              <div className="flex justify-between items-start mb-6 pb-6 border-b border-primary-100/50">
+                <h3 className="text-2xl sm:text-3xl font-bold text-gradient" id="modal-title">
                   {title}
                 </h3>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded p-1 transition-colors"
+                  className="text-dark-400 hover:text-dark-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-xl p-2 transition-all-premium hover:bg-dark-100/50 hover:scale-110"
                   aria-label="Close modal"
                 >
                   <span className="sr-only">Close</span>
                   <svg
-                    className="h-5 w-5 sm:h-6 sm:w-6"
+                    className="h-6 w-6 sm:h-7 sm:w-7"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    strokeWidth={2}
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
                 </button>
               </div>
             )}
-            <div className="mt-4 sm:mt-6">{children}</div>
+            <div className="mt-6 sm:mt-8 text-dark-700">{children}</div>
             {footer && (
-              <div className="mt-5 sm:mt-6 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t border-gray-200">
+              <div className="mt-8 sm:mt-10 flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-6 border-t border-primary-100/30">
                 {footer}
               </div>
             )}

@@ -1,33 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 241, 245, 249;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      135deg,
+      rgb(248, 250, 252) 0%,
+      rgb(241, 245, 249) 50%,
+      rgb(226, 232, 240) 100%
+    );
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-/* Smooth transitions for interactive elements */
+/* Premium glassmorphism effect */
 @layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
   .transition-smooth {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -39,6 +51,10 @@ body {
   .transition-transform-smooth {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  .transition-all-premium {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 /* Focus styles for accessibility */
@@ -46,7 +62,8 @@ body {
   *:focus-visible {
     outline: 2px solid theme('colors.primary.500');
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
   }
 
   button:focus-visible,
@@ -56,6 +73,7 @@ body {
   select:focus-visible {
     outline: 2px solid theme('colors.primary.500');
     outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
   }
 
   /* Skip link for accessibility */
@@ -63,11 +81,14 @@ body {
     position: absolute;
     top: -40px;
     left: 0;
-    background: theme('colors.primary.600');
+    background: linear-gradient(135deg, theme('colors.primary.600'), theme('colors.primary.700'));
     color: white;
-    padding: 8px;
+    padding: 10px 16px;
     text-decoration: none;
     z-index: 100;
+    border-radius: 0 0 8px 0;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
   .skip-link:focus {
@@ -172,15 +193,42 @@ body {
   }
 }
 
-/* Hover effects */
+/* Premium hover effects */
 @layer utilities {
   .hover-lift {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Premium text gradients */
+  .text-gradient {
+    background: linear-gradient(135deg, theme('colors.primary.600'), theme('colors.primary.800'));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, theme('colors.accent.500'), theme('colors.accent.700'));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 

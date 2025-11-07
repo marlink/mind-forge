@@ -19,7 +19,7 @@ export function Input({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={inputId} className="block text-sm font-semibold text-dark-700 mb-2">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -27,20 +27,28 @@ export function Input({
       <input
         id={inputId}
         className={`
-          w-full px-4 py-2 border rounded-lg
+          w-full px-4 py-3 border rounded-xl
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-all duration-200
-          hover:border-gray-400
-          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
+          transition-all-premium
+          bg-white/90 backdrop-blur-sm
+          border-dark-200
+          hover:border-primary-300 hover:bg-white
+          placeholder:text-dark-400
+          ${error ? 'border-red-500 focus:ring-red-500 bg-red-50/50' : ''}
           ${className}
         `}
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm font-medium text-red-600 flex items-center gap-1">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+        </p>
       )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-dark-500">{helperText}</p>
       )}
     </div>
   );
@@ -65,7 +73,7 @@ export function Textarea({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={textareaId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={textareaId} className="block text-sm font-semibold text-dark-700 mb-2">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -73,20 +81,28 @@ export function Textarea({
       <textarea
         id={textareaId}
         className={`
-          w-full px-4 py-2 border rounded-lg
+          w-full px-4 py-3 border rounded-xl
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-all duration-200 resize-y
-          hover:border-gray-400
-          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
+          transition-all-premium resize-y
+          bg-white/90 backdrop-blur-sm
+          border-dark-200
+          hover:border-primary-300 hover:bg-white
+          placeholder:text-dark-400
+          ${error ? 'border-red-500 focus:ring-red-500 bg-red-50/50' : ''}
           ${className}
         `}
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm font-medium text-red-600 flex items-center gap-1">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+        </p>
       )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-dark-500">{helperText}</p>
       )}
     </div>
   );
@@ -113,7 +129,7 @@ export function Select({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={selectId} className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={selectId} className="block text-sm font-semibold text-dark-700 mb-2">
           {label}
           {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -121,11 +137,12 @@ export function Select({
       <select
         id={selectId}
         className={`
-          w-full px-4 py-2 border rounded-lg bg-white
+          w-full px-4 py-3 border rounded-xl bg-white/90 backdrop-blur-sm
           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-          transition-all duration-200
-          hover:border-gray-400 cursor-pointer
-          ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
+          transition-all-premium
+          border-dark-200
+          hover:border-primary-300 hover:bg-white cursor-pointer
+          ${error ? 'border-red-500 focus:ring-red-500 bg-red-50/50' : ''}
           ${className}
         `}
         {...props}
@@ -137,10 +154,15 @@ export function Select({
         ))}
       </select>
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm font-medium text-red-600 flex items-center gap-1">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+        </p>
       )}
       {helperText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-dark-500">{helperText}</p>
       )}
     </div>
   );
@@ -167,20 +189,21 @@ export function Checkbox({
           type="checkbox"
           id={checkboxId}
           className={`
-            h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded
+            h-5 w-5 text-primary-600 focus:ring-primary-500 border-dark-300 rounded-lg
+            transition-all-premium cursor-pointer
             ${error ? 'border-red-500' : ''}
             ${className}
           `}
           {...props}
         />
         {label && (
-          <label htmlFor={checkboxId} className="ml-2 block text-sm text-gray-700">
+          <label htmlFor={checkboxId} className="ml-3 block text-sm font-medium text-dark-700 cursor-pointer">
             {label}
           </label>
         )}
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm font-medium text-red-600">{error}</p>
       )}
     </div>
   );

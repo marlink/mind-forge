@@ -25,11 +25,11 @@ export function Navigation({ user, showBackButton, backHref, backLabel }: Naviga
   };
 
   return (
-    <nav className="bg-white shadow-md border-b border-gray-200">
+    <nav className="glass-dark border-b border-white/10 shadow-premium-lg sticky top-0 z-40 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="text-xl font-bold text-primary-600">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center space-x-6">
+            <Link href="/" className="text-2xl font-bold text-gradient hover:scale-105 transition-transform-smooth">
               MindForge
             </Link>
             {showBackButton && backHref && (
@@ -48,7 +48,9 @@ export function Navigation({ user, showBackButton, backHref, backLabel }: Naviga
                     Dashboard
                   </Button>
                 </Link>
-                <span className="text-sm text-gray-600">{user.name}</span>
+                <span className="text-sm font-medium text-white/90 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-sm">
+                  {user.name}
+                </span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>

@@ -193,15 +193,20 @@ export default function DiscussionsPage() {
   if (loading && !discussions.length) return <PageLoading />;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-dark-50 via-white to-primary-50/30">
       <Navigation user={user} showBackButton backHref={`/bootcamps/${bootcampId}`} backLabel="Back to Bootcamp" />
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 sm:mb-10 animate-in fade-in slide-in-from-top">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold">Discussion Topics</h1>
-            {bootcamp && <p className="text-gray-600 mt-1 text-sm sm:text-base">{bootcamp.title}</p>}
+            <h1 className="text-4xl sm:text-5xl font-bold text-gradient mb-2">Discussion Topics</h1>
+            {bootcamp && (
+              <p className="text-dark-600 mt-2 text-base sm:text-lg font-medium flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
+                {bootcamp.title}
+              </p>
+            )}
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
             {isFacilitatorOrAdmin && (
               <Button 
                 onClick={() => { setEditingDiscussion(null); resetForm(); setIsCreateOpen(true); }}
@@ -217,7 +222,7 @@ export default function DiscussionsPage() {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8 animate-in fade-in slide-in-from-left" style={{ animationDelay: '100ms' }}>
             <Input 
               label="Filter by Day" 
               type="number" 
@@ -234,16 +239,16 @@ export default function DiscussionsPage() {
         ) : discussions.length === 0 ? (
           <EmptyState title="No discussion topics" message={isFacilitatorOrAdmin ? 'Create your first discussion topic to engage students' : 'No discussion topics available yet'} action={isFacilitatorOrAdmin ? <Button onClick={() => setIsCreateOpen(true)}>Create Discussion Topic</Button> : undefined} />
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-6 sm:gap-8">
             {discussions.map((discussion, index) => (
               <Card 
                 key={discussion.id} 
                 title={
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-sm font-medium">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="px-3 py-1.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-primary-500/30">
                       Day {discussion.day}
                     </span>
-                    <span className="text-lg sm:text-xl">{discussion.title}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-dark-800">{discussion.title}</span>
                   </div>
                 } 
                 headerActions={
@@ -270,36 +275,63 @@ export default function DiscussionsPage() {
                     </div>
                   )
                 }
-                className="hover:shadow-lg transition-all duration-300 animate-in fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="animate-in fade-in slide-in-from-bottom"
+                style={{ animationDelay: `${index * 75}ms` }}
               >
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Prompt</h3>
-                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{discussion.prompt}</p>
+                <div className="space-y-6">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-primary-50/50 to-primary-100/30 border border-primary-200/50">
+                    <h3 className="font-bold text-primary-700 mb-3 text-sm sm:text-base flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      </svg>
+                      Prompt
+                    </h3>
+                    <p className="text-dark-700 text-sm sm:text-base leading-relaxed font-medium">{discussion.prompt}</p>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Guidance</h3>
-                    <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{discussion.guidance}</p>
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-accent-50/50 to-accent-100/30 border border-accent-200/50">
+                    <h3 className="font-bold text-accent-700 mb-3 text-sm sm:text-base flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      Guidance
+                    </h3>
+                    <p className="text-dark-700 text-sm sm:text-base leading-relaxed font-medium">{discussion.guidance}</p>
                   </div>
                   {discussion.expectedOutcomes.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Expected Outcomes</h3>
-                      <ul className="list-disc list-inside space-y-1 text-gray-600 text-sm sm:text-base">
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-dark-50/50 to-dark-100/30 border border-dark-200/50">
+                      <h3 className="font-bold text-dark-700 mb-3 text-sm sm:text-base flex items-center gap-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Expected Outcomes
+                      </h3>
+                      <ul className="space-y-2 text-dark-700 text-sm sm:text-base">
                         {discussion.expectedOutcomes.map((outcome, idx) => (
-                          <li key={idx}>{outcome}</li>
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="text-primary-500 mt-1.5 flex-shrink-0">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                            <span className="font-medium">{outcome}</span>
+                          </li>
                         ))}
                       </ul>
                     </div>
                   )}
                   {discussion.tags.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">Tags</h3>
+                      <h3 className="font-bold text-dark-700 mb-3 text-sm sm:text-base flex items-center gap-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Tags
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         {discussion.tags.map((tag) => (
                           <span 
                             key={tag} 
-                            className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs sm:text-sm"
+                            className="px-3 py-1.5 bg-gradient-to-r from-primary-100 to-primary-200 text-primary-800 rounded-lg text-xs sm:text-sm font-semibold border border-primary-300/50 shadow-sm hover:shadow-md transition-all-premium hover:scale-105"
                           >
                             {tag}
                           </span>
