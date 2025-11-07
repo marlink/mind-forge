@@ -71,8 +71,8 @@ export default function EditBootcampPage() {
 
   const fetchUser = async () => {
     try {
-      const response = await api.get('/users/me');
-      if (response.status === 'success') {
+      const response = await api.get<{ user: { id: string; name: string; email: string } }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
         setUser({
           id: response.data.user.id,
           name: response.data.user.name,
@@ -86,9 +86,9 @@ export default function EditBootcampPage() {
 
   const fetchBootcamp = async () => {
     try {
-      const response = await api.get(`/bootcamps/${bootcampId}`);
+      const response = await api.get<{ bootcamp: Bootcamp }>(`/bootcamps/${bootcampId}`);
       
-      if (response.status === 'success') {
+      if (response.status === 'success' && response.data?.bootcamp) {
         const bootcampData = response.data.bootcamp;
         setBootcamp(bootcampData);
         setLearningOutcomes(

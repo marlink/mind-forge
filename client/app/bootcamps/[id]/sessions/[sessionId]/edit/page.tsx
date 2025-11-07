@@ -110,8 +110,8 @@ export default function EditSessionPage() {
 
   const fetchSession = async () => {
     try {
-      const response = await api.get(`/api/sessions/${sessionId}`);
-      if (response.status === 'success') {
+      const response = await api.get<{ session: any }>(`/api/sessions/${sessionId}`);
+      if (response.status === 'success' && response.data?.session) {
         const sessionData = response.data.session;
         setSession(sessionData);
         
@@ -136,8 +136,8 @@ export default function EditSessionPage() {
 
   const fetchBootcamp = async () => {
     try {
-      const response = await api.get(`/api/bootcamps/${bootcampId}`);
-      if (response.status === 'success') {
+      const response = await api.get<{ bootcamp: any }>(`/api/bootcamps/${bootcampId}`);
+      if (response.status === 'success' && response.data?.bootcamp) {
         setBootcamp(response.data.bootcamp);
       }
     } catch (err: any) {
@@ -147,13 +147,13 @@ export default function EditSessionPage() {
 
   const fetchExistingSessions = async () => {
     try {
-      const response = await api.get(`/api/bootcamps/${bootcampId}/sessions`);
-      if (response.status === 'success') {
+      const response = await api.get<{ sessions: Array<{ id: string; day: number }> }>(`/api/bootcamps/${bootcampId}/sessions`);
+      if (response.status === 'success' && response.data) {
         const sessions = response.data.sessions || [];
         // Exclude current session's day from existing days
         const days = sessions
-          .filter((s: any) => s.id !== sessionId)
-          .map((s: any) => s.day);
+          .filter((s) => s.id !== sessionId)
+          .map((s) => s.day);
         setExistingDays(days);
       }
     } catch (err) {

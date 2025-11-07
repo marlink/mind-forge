@@ -78,8 +78,8 @@ export default function DiscussionsPage() {
 
   const fetchUserRole = async () => {
     try {
-      const response = await api.get('/users/me');
-      if (response.status === 'success') {
+      const response = await api.get<{ user: { id: string; name: string; email: string; admin?: any; facilitator?: any } }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
         const userData = response.data.user;
         setUser({ id: userData.id, name: userData.name, email: userData.email });
         if (userData.admin) setUserRole('ADMIN');
@@ -92,8 +92,8 @@ export default function DiscussionsPage() {
 
   const fetchBootcamp = async () => {
     try {
-      const response = await api.get(`/bootcamps/${bootcampId}`);
-      if (response.status === 'success') {
+      const response = await api.get<{ bootcamp: Bootcamp }>(`/bootcamps/${bootcampId}`);
+      if (response.status === 'success' && response.data?.bootcamp) {
         setBootcamp(response.data.bootcamp);
       }
     } catch (err) {
@@ -107,8 +107,8 @@ export default function DiscussionsPage() {
       const url = dayFilter
         ? `/bootcamps/${bootcampId}/discussions?day=${dayFilter}`
         : `/bootcamps/${bootcampId}/discussions`;
-      const response = await api.get(url);
-      if (response.status === 'success') {
+      const response = await api.get<{ discussions: Discussion[] }>(url);
+      if (response.status === 'success' && response.data) {
         setDiscussions(response.data.discussions || []);
         setError(null);
       }

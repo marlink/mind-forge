@@ -60,8 +60,8 @@ export default function SessionsListPage() {
 
   const fetchUserRole = async () => {
     try {
-      const response = await api.get('/users/me');
-      if (response.status === 'success') {
+      const response = await api.get<{ user: { id: string; name: string; email: string; admin?: any; facilitator?: any; parent?: any; student?: any } }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
         const userData = response.data.user;
         setUser({
           id: userData.id,
@@ -80,8 +80,8 @@ export default function SessionsListPage() {
 
   const fetchBootcamp = async () => {
     try {
-      const response = await api.get(`/bootcamps/${bootcampId}`);
-      if (response.status === 'success') {
+      const response = await api.get<{ bootcamp: Bootcamp }>(`/bootcamps/${bootcampId}`);
+      if (response.status === 'success' && response.data?.bootcamp) {
         setBootcamp(response.data.bootcamp);
       }
     } catch (err) {
@@ -92,9 +92,9 @@ export default function SessionsListPage() {
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/bootcamps/${bootcampId}/sessions`);
+      const response = await api.get<{ sessions: Session[] }>(`/bootcamps/${bootcampId}/sessions`);
 
-      if (response.status === 'success') {
+      if (response.status === 'success' && response.data) {
         let fetchedSessions = response.data.sessions || [];
         
         // Apply filter

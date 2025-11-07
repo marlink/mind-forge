@@ -45,8 +45,8 @@ export default function NewBootcampPage() {
 
   const fetchUser = async () => {
     try {
-      const response = await api.get('/users/me');
-      if (response.status === 'success') {
+      const response = await api.get<{ user: { id: string; name: string; email: string } }>('/users/me');
+      if (response.status === 'success' && response.data?.user) {
         setUser({
           id: response.data.user.id,
           name: response.data.user.name,
@@ -118,9 +118,9 @@ export default function NewBootcampPage() {
           weeklySchedule: {},
         };
 
-        const response = await api.post('/bootcamps', payload);
+        const response = await api.post<{ bootcamp: { id: string } }>('/bootcamps', payload);
         
-        if (response.status === 'success') {
+        if (response.status === 'success' && response.data?.bootcamp) {
           toast.showToast('Bootcamp created successfully!', 'success');
           router.push(`/bootcamps/${response.data.bootcamp.id}`);
         }
