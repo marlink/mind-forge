@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import { ProfilingIntegration } from '@sentry/profiling-node';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 export const initSentry = () => {
   if (!process.env.SENTRY_DSN) {
@@ -11,7 +11,7 @@ export const initSentry = () => {
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || 'development',
     integrations: [
-      new ProfilingIntegration(),
+      nodeProfilingIntegration(),
     ],
     // Performance Monitoring
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
@@ -20,7 +20,7 @@ export const initSentry = () => {
     // Release tracking
     release: process.env.APP_VERSION || 'unknown',
     // Filter out health checks
-    beforeSend(event, hint) {
+    beforeSend(event, _hint) {
       // Don't send health check errors
       if (event.request?.url?.includes('/health')) {
         return null;

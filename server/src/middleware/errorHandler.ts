@@ -39,11 +39,12 @@ export const errorHandler = (
 
   // Send to Sentry for non-operational errors
   if (!(err instanceof AppError) && process.env.SENTRY_DSN) {
+    const requestIdStr = Array.isArray(requestId) ? requestId[0] : requestId;
     Sentry.captureException(err, {
       tags: {
         path: req.path,
         method: req.method,
-        requestId,
+        requestId: requestIdStr,
       },
     });
   }

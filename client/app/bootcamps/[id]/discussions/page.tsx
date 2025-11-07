@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Card } from '../../../../components/Card';
-import { Button } from '../../../../components/Button';
-import { PageLoading } from '../../../../components/Loading';
-import { EmptyState, ErrorMessage } from '../../../../components/Error';
-import { Modal } from '../../../../components/Modal';
-import { Input, Textarea } from '../../../../components/Form';
-import { useToast } from '../../../../components/Toast';
-import { Navigation } from '../../../../components/Navigation';
-import { api } from '../../../../lib/api';
+import { Card } from '../../../components/Card';
+import { Button } from '../../../components/Button';
+import { PageLoading } from '../../../components/Loading';
+import { EmptyState, ErrorMessage } from '../../../components/Error';
+import { Modal } from '../../../components/Modal';
+import { Input, Textarea } from '../../../components/Form';
+import { useToast } from '../../../components/Toast';
+import { Navigation } from '../../../components/Navigation';
+import { api } from '../../../lib/api';
 
 interface Discussion {
   id: string;
@@ -85,7 +85,9 @@ export default function DiscussionsPage() {
         if (userData.admin) setUserRole('ADMIN');
         else if (userData.facilitator) setUserRole('FACILITATOR');
       }
-    } catch (err) {}
+    } catch (err) {
+      // Silently fail - user role is optional for this page
+    }
   };
 
   const fetchBootcamp = async () => {

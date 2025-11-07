@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '../../../components/Card';
 import { Button } from '../../../components/Button';
-import { PageLoading, LoadingSkeleton } from '../../../components/Loading';
+import { PageLoading } from '../../../components/Loading';
 import { ErrorMessage, EmptyState } from '../../../components/Error';
 import { Table } from '../../../components/Table';
 import { Select } from '../../../components/Form';
