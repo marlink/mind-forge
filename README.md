@@ -41,7 +41,7 @@ See [QUICK_START.md](./QUICK_START.md) for immediate setup instructions.
 - ⏳ Session calendar view
 - ⏳ Enhanced bootcamp management pages
 
-**See [FRONTEND_STATUS.md](./FRONTEND_STATUS.md) and [NEXT_SESSION.md](./NEXT_SESSION.md) for detailed status.**
+**See [NEXT_SESSION.md](./NEXT_SESSION.md) for detailed development status and next steps.**
 **See [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md) for production deployment guide.**
 
 ## Project Structure
@@ -150,8 +150,7 @@ mindforge-mvp/
 
 - [Quick Start Guide](./QUICK_START.md) - Immediate setup instructions
 - [Production Deployment](./PRODUCTION_DEPLOYMENT.md) - Production deployment guide
-- [Session Summary](./SESSION_SUMMARY.md) - Current status and next steps
-- [End of Session Report](./END_OF_SESSION.md) - Latest session accomplishments
+- [Next Session Guide](./NEXT_SESSION.md) - Current status and next steps
 - [Development Roadmap](./ROADMAP.md) - Feature development plan
 - [Setup Guide](./docs/setup.md) - Detailed development setup instructions
 - [API Documentation](./docs/api.md) - API endpoint documentation

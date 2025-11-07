@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card } from '../Card';
 import { Button } from '../Button';
-import { LoadingSpinner, LoadingSkeleton } from '../Loading';
+import { LoadingSkeleton } from '../Loading';
 import { EmptyState, ErrorMessage } from '../Error';
 
 interface Bootcamp {
@@ -32,6 +32,7 @@ export function FacilitatorDashboard({ userId }: FacilitatorDashboardProps) {
 
   useEffect(() => {
     fetchBootcamps();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchBootcamps = async () => {
@@ -149,6 +150,21 @@ export function FacilitatorDashboard({ userId }: FacilitatorDashboardProps) {
         )}
       </Card>
 
+      {/* Quick Actions */}
+      <Card title="Quick Actions">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link href="/bootcamps/new">
+            <Button className="w-full">Create Bootcamp</Button>
+          </Link>
+          <Link href="/progress">
+            <Button variant="secondary" className="w-full">Track Progress</Button>
+          </Link>
+          <Link href="/knowledge-streams">
+            <Button variant="secondary" className="w-full">Knowledge Streams</Button>
+          </Link>
+        </div>
+      </Card>
+
       {/* My Bootcamps */}
       <Card title="My Bootcamps" headerActions={
         <Link href="/bootcamps/new">
@@ -193,6 +209,9 @@ export function FacilitatorDashboard({ userId }: FacilitatorDashboardProps) {
                     </Link>
                     <Link href={`/bootcamps/${bootcamp.id}/sessions`}>
                       <Button variant="outline" size="sm">Sessions</Button>
+                    </Link>
+                    <Link href={`/bootcamps/${bootcamp.id}/discussions`}>
+                      <Button variant="outline" size="sm">Discussions</Button>
                     </Link>
                     <Link href={`/bootcamps/${bootcamp.id}/edit`}>
                       <Button variant="secondary" size="sm">Edit</Button>

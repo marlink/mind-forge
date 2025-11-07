@@ -320,6 +320,89 @@ const columns = [
 />
 ```
 
+### Navigation
+
+A reusable navigation header component for consistent page navigation.
+
+**Location**: `client/app/components/Navigation.tsx`
+
+**Props**:
+- `user`: `{ id: string; name: string; email: string; role?: string } | null` - Current user object (optional)
+- `showBackButton`: `boolean` - Show back button (default: `false`)
+- `backHref`: `string` - URL for back button
+- `backLabel`: `string` - Label for back button (default: `'Back'`)
+
+**Features**:
+- User authentication state handling
+- Logout functionality
+- Back button navigation
+- Dashboard link
+- Login/Register links for unauthenticated users
+
+**Usage**:
+```tsx
+import { Navigation } from '../components/Navigation';
+
+<Navigation
+  user={user}
+  showBackButton={true}
+  backHref="/dashboard"
+  backLabel="Back to Dashboard"
+/>
+```
+
+### Calendar
+
+A calendar component for displaying sessions in a month view.
+
+**Location**: `client/app/components/Calendar.tsx`
+
+**Props**:
+- `sessions`: `Session[]` - Array of session objects
+- `bootcampId`: `string` - ID of the bootcamp
+- `onDateClick`: `(date: Date) => void` - Optional callback when a date is clicked
+- `className`: `string` - Additional CSS classes
+
+**Session Interface**:
+```typescript
+interface Session {
+  id: string;
+  day: number;
+  theme: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  activities?: Array<{
+    id: string;
+    time: string;
+    title: string;
+    type: string;
+  }>;
+}
+```
+
+**Features**:
+- Month navigation (previous/next/today)
+- Visual indicators for dates with sessions
+- Highlights today's date
+- Shows session count per day
+- Clickable dates to navigate to session details
+- Legend for visual indicators
+
+**Usage**:
+```tsx
+import { Calendar } from '../components/Calendar';
+
+<Calendar
+  sessions={sessions}
+  bootcampId={bootcampId}
+  onDateClick={(date) => {
+    // Handle date click
+    console.log('Clicked date:', date);
+  }}
+/>
+```
+
 ### ProgressChart
 
 Progress visualization components.
@@ -443,6 +526,46 @@ Admin dashboard for system management.
 - View communication details
 - Compose new messages
 - Mark as read functionality
+
+### Discussions Page
+
+**Location**: `client/app/bootcamps/[id]/discussions/page.tsx`
+
+**Route**: `/bootcamps/:bootcampId/discussions`
+
+**Features**:
+- List discussion topics for a bootcamp
+- Filter by day
+- Create/edit/delete discussion topics (facilitators/admins)
+- View discussion details (prompt, guidance, expected outcomes, tags)
+- Role-based access control
+
+### Knowledge Streams Page
+
+**Location**: `client/app/knowledge-streams/page.tsx`
+
+**Route**: `/knowledge-streams`
+
+**Features**:
+- List all knowledge streams
+- View stream details and levels
+- Assign streams to students (facilitators/admins)
+- View assigned streams (students)
+- Role-based views
+
+### Progress Tracking Page
+
+**Location**: `client/app/progress/page.tsx`
+
+**Route**: `/progress`
+
+**Features**:
+- View student progress records
+- Filter by skill and bootcamp
+- Create progress records (facilitators/admins)
+- Progress visualization charts
+- Student selection (facilitators/admins)
+- Role-based access (students see their own progress)
 
 ## Utilities
 

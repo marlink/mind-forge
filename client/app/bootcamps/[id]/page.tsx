@@ -414,13 +414,22 @@ export default function BootcampDetailPage() {
         </Card>
 
         {/* Discussion Topics */}
-        {discussions.length > 0 && (
-          <Card
-            title="Discussion Topics"
-            headerActions={
-              <span className="text-sm text-gray-600">{discussions.length} topics</span>
-            }
-          >
+        <Card
+          title="Discussion Topics"
+          headerActions={
+            <div className="flex items-center space-x-2">
+              {discussions.length > 0 && (
+                <span className="text-sm text-gray-600">{discussions.length} topics</span>
+              )}
+              <Link href={`/bootcamps/${bootcampId}/discussions`}>
+                <Button variant="outline" size="sm">
+                  {discussions.length > 0 ? 'Manage' : 'View'} Discussions
+                </Button>
+              </Link>
+            </div>
+          }
+        >
+          {discussions.length > 0 ? (
             <div className="space-y-4">
               {discussions.map((discussion) => (
                 <div
@@ -453,8 +462,13 @@ export default function BootcampDetailPage() {
                 </div>
               ))}
             </div>
-          </Card>
-        )}
+          ) : (
+            <EmptyState
+              title="No discussion topics"
+              message="Discussion topics will appear here once created"
+            />
+          )}
+        </Card>
       </div>
     </div>
   );

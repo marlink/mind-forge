@@ -159,10 +159,19 @@ The frontend application uses Next.js App Router. Here are the main routes:
 ### Protected Routes (Require Authentication)
 - `/dashboard` - Role-based dashboard (redirects to appropriate dashboard)
 - `/communications` - Communication inbox
+- `/knowledge-streams` - Knowledge streams page (view/assign streams)
+- `/progress` - Progress tracking page (view/create progress records)
 
 ### Session Routes
 - `/bootcamps/[id]/sessions/[sessionId]` - Session detail page
 - `/bootcamps/[id]/sessions` - Session list page (filtering, sorting, management)
+- `/bootcamps/[id]/sessions/[sessionId]/edit` - Edit session page (facilitators/admins)
+- `/bootcamps/[id]/sessions/new` - Create session page (facilitators/admins)
+
+### Bootcamp Management Routes
+- `/bootcamps/new` - Create bootcamp page (facilitators/admins)
+- `/bootcamps/[id]/edit` - Edit bootcamp page (facilitators/admins)
+- `/bootcamps/[id]/discussions` - Discussion topics page (view/manage discussions)
 
 ### Component Documentation
 See [Component Documentation](./components.md) for details on reusable UI components.

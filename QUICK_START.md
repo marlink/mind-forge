@@ -104,6 +104,5 @@ npm run test
 ## 📚 Next Steps
 
 - **New Session?** Start with [NEXT_SESSION.md](./NEXT_SESSION.md)
-- **Detailed Status**: See [SESSION_SUMMARY.md](./SESSION_SUMMARY.md)
-- **Latest Session**: See [END_OF_SESSION.md](./END_OF_SESSION.md)
+- **Detailed Status**: See [NEXT_SESSION.md](./NEXT_SESSION.md)
 

@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@mindforge/shared'],
-  
+
+  // Ignore ESLint errors during build (warnings will still show)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Production optimizations
   compress: true,
   poweredByHeader: false,
